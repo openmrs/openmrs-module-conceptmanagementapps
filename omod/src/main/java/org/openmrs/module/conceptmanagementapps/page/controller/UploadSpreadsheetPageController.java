@@ -45,7 +45,7 @@ public class UploadSpreadsheetPageController {
 		
 	}
 	
-	// option 2
+
 	public void post(@RequestParam("spreadsheet") MultipartFile spreadsheetFile) {
 	}
 	
