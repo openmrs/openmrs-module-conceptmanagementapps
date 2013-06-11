@@ -29,16 +29,17 @@ public class ConceptManagementAppsModuleServiceImpl extends BaseOpenmrsService i
 	private ConceptManagementAppsModuleDAO dao;
 	
 	/**
-     * @param dao the dao to set
-     */
-    public void setDao(ConceptManagementAppsModuleDAO dao) {
-	    this.dao = dao;
-    }
-    
-    /**
-     * @return the dao
-     */
-    public ConceptManagementAppsModuleDAO getDao() {
-	    return dao;
-    }
+	 * @param dao the dao to set
+	 */
+	public void setDao(ConceptManagementAppsModuleDAO dao) {
+		this.dao = dao;
+	}
+	
+	/**
+	 * @return the dao
+	 */
+	public ConceptManagementAppsModuleDAO getDao() {
+		return dao;
+	}
+	
 }
