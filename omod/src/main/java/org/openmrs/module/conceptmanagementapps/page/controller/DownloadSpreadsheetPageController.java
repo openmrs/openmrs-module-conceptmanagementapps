@@ -14,10 +14,11 @@ public class DownloadSpreadsheetPageController {
 	
 	public void post(@RequestParam("sourceId") String sourceId, UiSessionContext sessionContext, PageModel model) {
 		List<ConceptSource> sourceList = Context.getConceptService().getAllConceptSources();
+		List<ConceptClass> classList = Context.getConceptService().getAllConceptClasses();
 		
 		model.addAttribute("sourceList", sourceList);
+		model.addAttribute("classList", classList);
 		
-
 	}
 	
 	public void get(UiSessionContext sessionContext, PageModel model) throws Exception {
