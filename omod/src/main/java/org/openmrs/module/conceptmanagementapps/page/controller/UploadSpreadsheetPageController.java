@@ -17,6 +17,8 @@ public class UploadSpreadsheetPageController {
 	protected final Log log = LogFactory.getLog(this.getClass());
 	
 	public void post(@RequestParam("spreadsheet") MultipartFile spreadsheetFile) {
+	System.out.println("-----------------------------test the log info");
+
 		BufferedReader br = null;
 		String line = "";
 		try {
@@ -42,8 +44,9 @@ public class UploadSpreadsheetPageController {
 				String[] tokens = line.split(",(?=([^\"]*\"[^\"]*\")*[^\"]*$)");
 				for (String t : tokens) {
 					switch (linenumber) {
-						case 1:
+						case 1: System.out.println("-----------------------------test the log info");
 							log.info("jenn remove 1 " + t);
+							
 							linenumber++;
 							break;
 						case 2:

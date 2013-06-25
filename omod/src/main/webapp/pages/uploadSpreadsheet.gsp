@@ -35,7 +35,7 @@ ${ ui.includeFragment("uicommons", "validationMessages")}
         		${ui.message("conceptmanagementapps.uploadpage.label")}
     		</legend>
     		<p class="input-position-class">
-    			<b>File to upload jennTest: <input type="file" name="spreadsheet"/></b>
+    			<b>${ui.message("conceptmanagementapps.upload.label")} <input type="file" name="spreadsheet"/></b>
     			<div id="confirmation">
             		<div id="submit">
               			<p style="display: inline"><input type="submit" class="confirm" value="Submit" /></p>
