@@ -1,12 +1,18 @@
-*.class
-.settings
-.project
-.classpath
-target
+/.classpath
+/.settings
+/.project
+/target
+/api/.classpath
+/api/.settings
+/api/.project
+/api/target
+/omod/.classpath
+/omod/.settings
+/omod/.project
+/omod/target
+/nbactions.xml
 
+/.idea
 *.iml
-
-# Package Files #
-*.jar
-*.war
-*.ear
+*.sass-cache
+*.DS_Store

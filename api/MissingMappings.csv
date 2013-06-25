@@ -1,0 +1,3 @@
+map type,source name,source code,concept Id,concept uuid,prefered name,description,class,datatype,all existing mappings
+ , , ,2,92b910bd-298c-4ecf-a632-661ae2f446bf,null,this is another description,Test2,Numeric,
+ , , ,1,957eba27-2b38-43e8-91a9-4dfe3956a32d,null,this is a description,Test2,Coded,
