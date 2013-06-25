@@ -55,7 +55,7 @@ public class DownloadSpreadsheetPageController {
 		String delimiter = ",";
 		String description, name;
 		String line = "" + "map type" + delimiter + "source name" + delimiter + "source code" + delimiter + "concept Id"
-		        + delimiter + "concept uuid" + delimiter + "prefered name" + delimiter + "description" + delimiter + "class"
+		        + delimiter + "concept uuid" + delimiter + "preferred name" + delimiter + "description" + delimiter + "class"
 		        + delimiter + "datatype" + delimiter + "all existing mappings" + "\n";
 		
 		for (Concept concept : conceptList) {
