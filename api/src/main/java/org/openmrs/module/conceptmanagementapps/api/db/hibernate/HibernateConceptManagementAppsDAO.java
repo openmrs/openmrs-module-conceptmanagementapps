@@ -9,7 +9,7 @@
  * License for the specific language governing rights and limitations
  * under the License.
  *
- * Copyright (C) OpenMRS, LLC.  All Rights Reserved.
+ * Copyright (C) OpenMRS, LLC. All Rights Reserved.
  */
 package org.openmrs.module.conceptmanagementapps.api.db.hibernate;
 
@@ -17,9 +17,16 @@ import java.util.List;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.hibernate.Criteria;
 import org.hibernate.Query;
 import org.hibernate.SessionFactory;
+import org.hibernate.criterion.CriteriaSpecification;
+import org.hibernate.criterion.Restrictions;
+import org.hibernate.transform.DistinctRootEntityResultTransformer;
 import org.openmrs.Concept;
+import org.openmrs.ConceptClass;
+import org.openmrs.ConceptMap;
+import org.openmrs.ConceptSource;
 import org.openmrs.api.db.DAOException;
 import org.openmrs.module.conceptmanagementapps.api.db.ConceptManagementAppsDAO;
 
@@ -47,8 +54,25 @@ public class HibernateConceptManagementAppsDAO implements ConceptManagementAppsD
 	}
 	
 	@SuppressWarnings("unchecked")
-	public List<Concept> getUnmappedConcepts(String sourceId, String classes) throws DAOException {
-		
+	public List<Concept> getUnmappedConcepts(ConceptSource conceptSource, List<ConceptClass> conceptClasses)
+	    throws DAOException {
+		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(Concept.class);
+		Criteria conceptMapCrit = sessionFactory.getCurrentSession().createCriteria(Concept.class, "concept");
+		conceptMapCrit.createAlias("conceptMappings", "conceptMappings");
+		conceptMapCrit.createAlias("conceptMappings.conceptReferenceTerm", "term");
+		conceptMapCrit.add(Restrictions.eq("term.conceptSource", conceptSource));
+		criteria.createAlias("conceptMappings", "conceptMappings");
+		//we don't want any mappings that have a concept which has a mapping to our source
+		criteria.add(Restrictions.not(Restrictions.in("conceptMappings.concept", (List<Concept>) conceptMapCrit.list())));
+		// ignore retired concepts
+		criteria.add(Restrictions.eq("retired", false));
+		// only want concepts with the following conceptClass(s)
+		for (ConceptClass conceptClass : conceptClasses) {
+			criteria.add(Restrictions.eq("conceptClass", conceptClass));
+		}
+		// we only want distinct concepts
+		criteria.setResultTransformer(DistinctRootEntityResultTransformer.INSTANCE);
+		//we also want all concepts with out a mapping at all because that also means it is not mapped to our source
 		String hql = "";
 		hql += "select distinct concept";
 		hql += " from Concept as concept";
@@ -56,23 +80,25 @@ public class HibernateConceptManagementAppsDAO implements ConceptManagementAppsD
 		hql += " and";
 		hql += " concept.retired = false";
 		hql += " and";
-		hql += "(" + classes + ")";
-		String hql2 = "";
-		hql2 += "select distinct concept";
-		hql2 += " from Concept as concept";
-		hql2 += " inner join concept.conceptMappings as conceptMappings";
-		hql2 += " inner join conceptMappings.conceptReferenceTerm as conceptReferenceTerm";
-		hql2 += " where";
-		hql2 += " conceptReferenceTerm.conceptSource.conceptSourceId != " + sourceId;
-		hql += " and";
-		hql += " concept.retired = false";
-		hql2 += " and";
-		hql2 += "(" + classes + ")";
+		int i = 1;
+		for (ConceptClass conceptClass : conceptClasses) {
+			
+			if (i < conceptClasses.size()) {
+				hql += " concept.conceptClass.conceptClassId=" + conceptClass.getConceptClassId();
+				hql += " or";
+				
+			} else {
+				hql += " concept.conceptClass.conceptClassId=" + conceptClass.getConceptClassId();
+			}
+			i++;
+		}
+		
 		Query query = sessionFactory.getCurrentSession().createQuery(hql);
-		Query query2 = sessionFactory.getCurrentSession().createQuery(hql2);
-		List<Concept> list1 = query.list();
-		List<Concept> list2 = query2.list();
+		List<Concept> list2 = query.list();
+		List<Concept> list1 = criteria.list();
 		list1.addAll(list2);
-		return list1;
+		return (List<Concept>) list1;
+		
 	}
+	
 }

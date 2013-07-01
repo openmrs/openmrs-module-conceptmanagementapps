@@ -7,7 +7,7 @@
 			"id": "conceptmanagementapps.conceptmanagementappsHomepageLink",
 			"extensionPointId": "org.openmrs.referenceapplication.homepageLink",
 			"type": "link",
-			"label": "${project.parent.artifactId}.title",
+			"label": "jenn temp conceptmanagementapps label",
 			"url": "conceptmanagementapps/uploadSpreadsheet.page",
 			"icon": "icon-calendar"
 

@@ -9,13 +9,15 @@
  * License for the specific language governing rights and limitations
  * under the License.
  *
- * Copyright (C) OpenMRS, LLC.  All Rights Reserved.
+ * Copyright (C) OpenMRS, LLC. All Rights Reserved.
  */
 package org.openmrs.module.conceptmanagementapps.api.impl;
 
 import java.util.List;
 
 import org.openmrs.Concept;
+import org.openmrs.ConceptClass;
+import org.openmrs.ConceptSource;
 import org.openmrs.api.impl.BaseOpenmrsService;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -46,9 +48,9 @@ public class ConceptManagementAppsServiceImpl extends BaseOpenmrsService impleme
 	}
 	
 	@Override
-	public List<Concept> getUnmappedConcepts(String sourceId, String classes) {
+	public List<Concept> getUnmappedConcepts(ConceptSource source, List<ConceptClass> classes) {
 		
-		return this.dao.getUnmappedConcepts(sourceId, classes);
+		return this.dao.getUnmappedConcepts(source, classes);
 	}
 	
 }

@@ -9,7 +9,7 @@
  * License for the specific language governing rights and limitations
  * under the License.
  *
- * Copyright (C) OpenMRS, LLC.  All Rights Reserved.
+ * Copyright (C) OpenMRS, LLC. All Rights Reserved.
  */
 package org.openmrs.module.conceptmanagementapps.api.db;
 
@@ -18,13 +18,14 @@ import java.util.List;
 import org.openmrs.api.db.DAOException;
 import org.openmrs.module.conceptmanagementapps.api.ConceptManagementAppsService;
 
-
 import org.openmrs.Concept;
 import org.openmrs.ConceptClass;
+import org.openmrs.ConceptSource;
+
 /**
- *  Database methods for {@link ConceptManagementAppsService}.
+ * Database methods for {@link ConceptManagementAppsService}.
  */
 public interface ConceptManagementAppsDAO {
 	
-	public List<Concept> getUnmappedConcepts(String sourceId, String classes) throws DAOException;
+	public List<Concept> getUnmappedConcepts(ConceptSource source, List<ConceptClass> classes) throws DAOException;
 }

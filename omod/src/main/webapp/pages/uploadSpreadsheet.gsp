@@ -28,24 +28,20 @@ ${ ui.includeFragment("uicommons", "validationMessages")}
         ${ui.message("conceptmanagementapps.app.label")}
     </h2>
 
-	<form method="post" encType="multipart/form-data">
-  		<fieldset>
-   			<legend>
-      			<i class="icon-class-if-needed"></i>
-        		${ui.message("conceptmanagementapps.uploadpage.label")}
-    		</legend>
-    		<p class="input-position-class">
-    			<b>${ui.message("conceptmanagementapps.upload.label")} <input type="file" name="spreadsheet"/></b>
-    			<div id="confirmation">
-            		<div id="submit">
-              			<p style="display: inline"><input type="submit" class="confirm" value="Submit" /></p>
-            		</div>
-    			</div>
-    		</p>
-		</fieldset>
-	</form>
-	</div>
-    
-
-
-	
+<form method="post" encType="multipart/form-data">
+   <fieldset>
+    <legend>
+       <i class="icon-class-if-needed"></i>
+         ${ui.message("conceptmanagementapps.uploadpage.label")}
+     </legend>
+     <p class="input-position-class">
+     <b>${ui.message("conceptmanagementapps.upload.label")} <input type="file" name="spreadsheet"/></b>
+     <div id="confirmation">
+             <div id="submit">
+               <p style="display: inline"><input type="submit" class="confirm" value="Submit" /></p>
+             </div>
+     </div>
+     </p>
+</fieldset>
+</form>
+</div>
