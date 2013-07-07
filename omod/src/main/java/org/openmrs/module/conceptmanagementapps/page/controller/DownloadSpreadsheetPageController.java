@@ -21,21 +21,24 @@ import org.openmrs.api.context.Context;
 import org.openmrs.module.appui.UiSessionContext;
 import org.openmrs.module.conceptmanagementapps.api.ConceptManagementAppsService;
 import org.openmrs.ui.framework.UiUtils;
+import org.openmrs.ui.framework.annotation.BindParams;
 import org.openmrs.ui.framework.page.FileDownload;
 import org.openmrs.ui.framework.page.PageModel;
+import org.springframework.web.bind.annotation.RequestParam;
 
 public class DownloadSpreadsheetPageController {
 	
 	private Log log = LogFactory.getLog(this.getClass());
 	
-	public FileDownload post(UiSessionContext sessionContext, HttpServletRequest request, UiUtils ui, PageModel model,
+	public FileDownload post(UiSessionContext sessionContext, HttpServletRequest request,
+	                         @RequestParam("conceptClass") @BindParams String[] classes,
+	                         @RequestParam("sourceList") @BindParams String sourceId, UiUtils ui, PageModel model,
 	                         HttpServletResponse response) {
-		String classes = (String) request.getParameter("classes");
-		String sourceId = (String) request.getParameter("sourceId");
+		
 		ConceptManagementAppsService conceptManagementAppsService = (ConceptManagementAppsService) Context
 		        .getService(ConceptManagementAppsService.class);
 		ConceptService cs = Context.getConceptService();
-		String[] classArray = classes.split(",");
+		String[] classArray = classes;
 		List<ConceptClass> conceptClasses = new ArrayList<ConceptClass>();
 		for (String classString : classArray) {
 			conceptClasses.add(cs.getConceptClass(Integer.valueOf(classString.trim())));

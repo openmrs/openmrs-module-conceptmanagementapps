@@ -1,12 +1,12 @@
 <%
     
-    ui.decorateWith("appui", "standardEmrPage")
-    ui.includeJavascript("uicommons", "navigator/validators.js", Integer.MAX_VALUE - 19)
-    ui.includeJavascript("uicommons", "navigator/navigator.js", Integer.MAX_VALUE - 20)
-    ui.includeJavascript("uicommons", "navigator/navigatorHandlers.js", Integer.MAX_VALUE - 21)
-    ui.includeJavascript("uicommons", "navigator/navigatorModels.js", Integer.MAX_VALUE - 21)
+    ui.decorateWith("appui", "standardEmrPage");
+    ui.includeJavascript("uicommons", "navigator/validators.js", Integer.MAX_VALUE - 19);
+    ui.includeJavascript("uicommons", "navigator/navigator.js", Integer.MAX_VALUE - 20);
+    ui.includeJavascript("uicommons", "navigator/navigatorHandlers.js", Integer.MAX_VALUE - 21);
+    ui.includeJavascript("uicommons", "navigator/navigatorModels.js", Integer.MAX_VALUE - 21);
     ui.includeJavascript("uicommons", "navigator/exitHandlers.js", Integer.MAX_VALUE - 22);
-    ui.includeCss("uicommons", "emr/simpleFormUi.css", -200)
+    ui.includeCss("uicommons", "emr/simpleFormUi.css", -200);
 %>
 ${ ui.includeFragment("uicommons", "validationMessages")}
 
@@ -31,11 +31,10 @@ ${ ui.includeFragment("uicommons", "validationMessages")}
 <form method="post" encType="multipart/form-data">
    <fieldset>
     <legend>
-       <i class="icon-class-if-needed"></i>
-         ${ui.message("conceptmanagementapps.uploadpage.label")}
+         ${ui.message("conceptmanagementapps.uploadspreadsheet.label")}
      </legend>
      <p class="input-position-class">
-     <b>${ui.message("conceptmanagementapps.upload.label")} <input type="file" name="spreadsheet"/></b>
+     <b>${ui.message("conceptmanagementapps.uploadpage.label")} <input type="file" name="spreadsheet"/></b>
      <div id="confirmation">
              <div id="submit">
                <p style="display: inline"><input type="submit" class="confirm" value="Submit" /></p>

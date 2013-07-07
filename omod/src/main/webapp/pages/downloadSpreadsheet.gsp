@@ -1,34 +1,21 @@
 <%
     
-    ui.decorateWith("appui", "standardEmrPage")
-    ui.includeCss("uicommons", "styleguide/index.css")
-    ui.includeCss("uicommons", "styleguide/jquery.toastmessage.css")
-    ui.includeCss("uicommons", "styleguide/jquery-ui-1.9.2.custom.min.css")
-
-    ui.includeJavascript("uicommons", "jquery-1.8.3.min.js");
-    ui.includeJavascript("uicommons", "bootstrap-scrollspy.js");
-    ui.includeJavascript("uicommons", "typeahead.js");
-    ui.includeJavascript("uicommons", "script.js");
-    ui.includeJavascript("uicommons", "navigator/validators.js", Integer.MAX_VALUE - 19)
-    ui.includeJavascript("uicommons", "navigator/navigator.js", Integer.MAX_VALUE - 20)
-    ui.includeJavascript("uicommons", "navigator/navigatorHandlers.js", Integer.MAX_VALUE - 21)
-    ui.includeJavascript("uicommons", "navigator/navigatorModels.js", Integer.MAX_VALUE - 21)
-    ui.includeJavascript("uicommons", "navigator/exitHandlers.js", Integer.MAX_VALUE - 22);
-    ui.includeCss("uicommons", "emr/simpleFormUi.css", -200)
+    ui.decorateWith("appui", "standardEmrPage");
+    ui.includeCss("uicommons", "emr/simpleFormUi.css", -200);
     
 def sourceListMap=[]
-sourceList.each { sourcelist ->
-sourceListMap2 = [label: sourcelist.name, value: sourcelist.id]
-sourceListMap << sourceListMap2
+	sourceList.each { sourcelist ->
+		sourceListMap2 = [label: sourcelist.name, value: sourcelist.id]
+		sourceListMap << sourceListMap2
 
-}
+	}
 
 def classListMap=[]
-classList.each { classlist ->
-classListMap2 = [label: classlist.name, value: classlist.id]
-classListMap << classListMap2
+	classList.each { classlist ->
+		classListMap2 = [label: classlist.name, value: classlist.id]
+		classListMap << classListMap2
 
-}
+	}
     
 %>
 
@@ -37,31 +24,40 @@ ${ ui.includeFragment("uicommons", "validationMessages")}
 <script type="text/javascript">
     jQuery(function() {
         KeyboardController();
-    }
- </script>
- <script type="text/javascript">
-     var breadcrumbs = [
+    });
+</script>
+
+<script type="text/javascript">
+    var breadcrumbs = [
         { icon: "icon-home", link: '/' + OPENMRS_CONTEXT_PATH + '/index.htm' },
-        { label: "${ ui.message("conceptmanagementapps.downloadpage.label") }", link: "${ ui.pageLink("conceptmanagementapps", "downloadSpreadsheet") }" }
+        { label: "${ ui.message('conceptmanagementapps.downloadspreadsheet.label') }", link: "${ ui.pageLink('conceptmanagementapps', 'downloadSpreadsheet') }" }
     ];
  </script>
  <script type="text/javascript">
-    function getCheckedItems(){
-     hiddenClassList = document.getElementById("classes");
-     for(var i = 0; i < document.getElementsByName("checkboxes").length; i++){
-     if(document.getElementsByName("checkboxes")[i].checked){
-    
-     if(hiddenClassList.value.length>0){
-     hiddenClassList.value=hiddenClassList.value+","+document.getElementsByName("checkboxes")[i].value;
-     }
-    else{
-    hiddenClassList.value=document.getElementsByName("checkboxes")[i].value;
+
+function validateForm() {  
+	var conceptClassErrText = document.getElementById("showHideConceptClassValidationError");
+	var sourceIdErrText = document.getElementById("showHideSourceIdValidationError");
+	var error=0;
+    conceptClassErrText.style.display = "none";
+    sourceIdErrText.style.display = "none";
+    var conceptClassFields = jQuery("input[name='conceptClass']").serializeArray(); 
+    if (conceptClassFields.length == 0) 
+    { 
+    	conceptClassErrText.style.display = "block";
+    	error=1;
+    } 
+    if(document.getElementsByName("sourceList")[0].value.length==0){
+        sourceIdErrText.style.display = "block";
+        error=1;
     }
+    if(error==1){
+    	return false;
     }
+    else 
+    { 
+        document.downloadForm.submit();
     }
-}
-function getSourceId(){
-document.getElementById("sourceId").value = document.getElementsByName("sourceList")[0].value;
 }
 </script>
 <link rel="stylesheet" href="/openmrs/ms/uiframework/resource/referenceapplication/styles/referenceapplication.css" type="text/css"/>
@@ -73,37 +69,46 @@ document.getElementById("sourceId").value = document.getElementsByName("sourceLi
         ${ui.message("conceptmanagementapps.downloadpage.label")}
     </h3>
       
-<form method="post">
-            <fieldset>
+<form class="simple-form-ui" name="downloadForm" method="post">
+            <div id="showHideSourceIdValidationError" style="display: none">
+            	<span  class="required">(${ ui.message("emr.formValidation.messages.requiredField") })</span>
+            </div>
+            <fieldset>        
                 ${ ui.includeFragment("uicommons", "field/dropDown", [
                 label: ui.message("conceptmanagementapps.source.label"),
                 formFieldName: "sourceList",
                 options: sourceListMap,
                 classes: ["required"],
                 maximumSize: 1,
-                left: true]
-                )}
-         </fieldset>
-            <fieldset>
-             <legend>${ui.message("conceptmanagementapps.class.label")}</legend>
-<p>
-<ul class="select">
-<label class="required"></label>
-<% classList.each { classlist -> %>
-<li>
-<label>${ui.message(classlist.name)}</label>
-<input type="checkbox" value=${classlist.id} name="checkboxes" id="${classlist.id}" "/>
-</li>
-<%}%>
-<input name="classes" id="classes" type="hidden"/>
-<input name="sourceId" id="sourceId" type="hidden"/>
-</ul></p>
-<div class="before-dataCanvas"></div>
-<div id="dataCanvas"></div>
-<div class="after-data-canvas"></div>
-<div id="submit">
-<p style="display: inline"><input type="submit" class="confirm" value="Download" onclick="javascript:getSourceId();getCheckedItems();"/></p>
-</div>
-</fieldset>
+               	left: true]
+               	)}
+        	</fieldset>
 
-</form>
+            <fieldset>
+       
+            
+            	<legend>${ui.message("conceptmanagementapps.class.label")}</legend>
+            	<div id="showHideConceptClassValidationError" style="display: none">
+            		<span  class="required">(${ ui.message("emr.formValidation.messages.requiredField") })</span>
+            	</div>
+            	
+				<p>
+				<ul class="select">
+				<label  class="required"></label>
+						<% classList.each { classlist -> %> 
+							<li>
+								<label>${ui.message(classlist.name)}</label>
+								<input type="checkbox" value=${classlist.id} name="conceptClass" id="${classlist.id}"/>
+							</li>
+						<%}%>
+				</ul>
+						
+				
+				
+				</p>
+			</fieldset>
+            <div id="submit">
+            <p style="display: inline"><input type="button" class="confirm" value="Download" onclick="javascript:validateForm();"/></p>
+			</div>
+	</form>
+</div>

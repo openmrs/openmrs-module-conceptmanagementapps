@@ -1,14 +1,14 @@
 [
 	{
 		"id": "conceptmanagementapps.missingConceptMappings",
-		"description": "jenn temp description",
+		"description": "${project.parent.artifactId}.description",
 		"extensions": [
 			{
 			"id": "conceptmanagementapps.conceptmanagementappsHomepageLink",
 			"extensionPointId": "org.openmrs.referenceapplication.homepageLink",
 			"type": "link",
-			"label": "jenn temp conceptmanagementapps label",
-			"url": "conceptmanagementapps/uploadSpreadsheet.page",
+			"label": "${project.parent.artifactId}.title",
+			"url": "conceptmanagementapps/missingConceptMappings.page",
 			"icon": "icon-calendar"
 
 			}
