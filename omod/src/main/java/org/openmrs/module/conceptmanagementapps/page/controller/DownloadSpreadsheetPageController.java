@@ -1,6 +1,7 @@
 package org.openmrs.module.conceptmanagementapps.page.controller;
 
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
@@ -15,29 +16,40 @@ import org.openmrs.ConceptDescription;
 import org.openmrs.ConceptMap;
 import org.openmrs.ConceptName;
 import org.openmrs.ConceptSource;
+import org.openmrs.api.ConceptService;
 import org.openmrs.api.context.Context;
 import org.openmrs.module.appui.UiSessionContext;
 import org.openmrs.module.conceptmanagementapps.api.ConceptManagementAppsService;
 import org.openmrs.ui.framework.UiUtils;
+import org.openmrs.ui.framework.annotation.BindParams;
 import org.openmrs.ui.framework.page.FileDownload;
 import org.openmrs.ui.framework.page.PageModel;
+import org.springframework.web.bind.annotation.RequestParam;
 
 public class DownloadSpreadsheetPageController {
 	
 	private Log log = LogFactory.getLog(this.getClass());
 	
-	public FileDownload post(UiSessionContext sessionContext, HttpServletRequest request, UiUtils ui, PageModel model,
+	public FileDownload post(UiSessionContext sessionContext, HttpServletRequest request,
+	                         @RequestParam("conceptClass") @BindParams String[] classes,
+	                         @RequestParam("sourceList") @BindParams String sourceId, UiUtils ui, PageModel model,
 	                         HttpServletResponse response) {
-		String classes = (String) request.getParameter("classes");
-		String sourceId = (String) request.getParameter("sourceId");
+		
 		ConceptManagementAppsService conceptManagementAppsService = (ConceptManagementAppsService) Context
 		        .getService(ConceptManagementAppsService.class);
-		List<Concept> conceptList = conceptManagementAppsService.getUnmappedConcepts(sourceId, classes);
+		ConceptService cs = Context.getConceptService();
+		String[] classArray = classes;
+		List<ConceptClass> conceptClasses = new ArrayList<ConceptClass>();
+		for (String classString : classArray) {
+			conceptClasses.add(cs.getConceptClass(Integer.valueOf(classString.trim())));
+		}
+		List<Concept> conceptList = conceptManagementAppsService.getUnmappedConcepts(Context.getConceptService()
+		        .getConceptSource(1), conceptClasses);
 		List<ConceptSource> sourceList = Context.getConceptService().getAllConceptSources();
 		List<ConceptClass> classList = Context.getConceptService().getAllConceptClasses();
 		model.addAttribute("sourceList", sourceList);
 		model.addAttribute("classList", classList);
-		return writeToFile(conceptList);
+		return writeToFile(conceptList, sourceId);
 		
 	}
 	
@@ -49,15 +61,14 @@ public class DownloadSpreadsheetPageController {
 		
 	}
 	
-	private FileDownload writeToFile(List<Concept> conceptList) {
+	private FileDownload writeToFile(List<Concept> conceptList, String sourceIdString) {
 		
 		Locale locale = Context.getLocale();
 		String delimiter = ",";
 		String description, name;
 		String line = "" + "map type" + delimiter + "source name" + delimiter + "source code" + delimiter + "concept Id"
-		        + delimiter + "concept uuid" + delimiter + "preferred name" + delimiter + "description" + delimiter + "class"
-		        + delimiter + "datatype" + delimiter + "all existing mappings" + "\n";
-		
+		        + delimiter + "concept uuid" + delimiter + "preferred name" + delimiter + "description" + delimiter
+		        + "class" + delimiter + "datatype" + delimiter + "all existing mappings" + "\n";
 		for (Concept concept : conceptList) {
 			line += " " + delimiter + " " + delimiter + " " + delimiter
 			
@@ -106,6 +117,10 @@ public class DownloadSpreadsheetPageController {
 			if (tmp.length() > 0 && tmp.charAt(tmp.length() - 1) == '\n') {
 				tmp = tmp.substring(0, tmp.length() - 1);
 			}
+			if (tmp.trim().length() < 1) {
+				tmp = "    ";
+				
+			}
 			
 			line += '"' + tmp + "\"\n";
 			
@@ -115,7 +130,7 @@ public class DownloadSpreadsheetPageController {
 		String s = new SimpleDateFormat("dMy_Hm").format(new Date());
 		
 		String contentType = "text/csv;charset=UTF-8";
-		String filename = "conceptsMissingMappings" + s + ".csv";
+		String filename = "conceptsMissingMappings" + s + "_" + sourceIdString + ".csv";
 		FileDownload missingMappingsFile = new FileDownload(filename, contentType, line.getBytes());
 		return missingMappingsFile;
 	}
