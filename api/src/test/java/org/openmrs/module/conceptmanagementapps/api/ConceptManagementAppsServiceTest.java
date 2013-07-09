@@ -15,11 +15,15 @@ package org.openmrs.module.conceptmanagementapps.api;
 
 import static org.junit.Assert.*;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.junit.Assert;
 import org.junit.Test;
 import org.openmrs.Concept;
+import org.openmrs.ConceptClass;
+import org.openmrs.ConceptSource;
+import org.openmrs.api.ConceptService;
 import org.openmrs.api.context.Context;
 import org.openmrs.test.BaseModuleContextSensitiveTest;
 import org.junit.Before;
@@ -55,12 +59,19 @@ public class ConceptManagementAppsServiceTest extends
 		initializeInMemoryDatabase();
 		executeDataSet("concepts.xml");
 		authenticate();
-		String sourceId = " 6 ";
-		String classes = " concept.conceptClass.conceptClassId = 2 ";
-		ConceptManagementAppsService conceptManagementAppsService = (ConceptManagementAppsService) Context
+		String sourceId = "6";
+		String classes = "2,4,1";
+		String [] classArray = classes.split(",");
+		List<ConceptClass> conceptClasses=new ArrayList<ConceptClass>();
+		for(int i=0;i<classArray.length;i++){
+			String convToInteger = classArray[i];
+			Integer classInteger = Integer.valueOf(convToInteger.trim());
+			conceptClasses.add(Context.getConceptService().getConceptClass((classInteger)));
+		}
+		conceptManagementAppsService = (ConceptManagementAppsService) Context
 				.getService(ConceptManagementAppsService.class);
 		List<Concept> conceptList = conceptManagementAppsService
-				.getUnmappedConcepts(sourceId, classes);
-		Assert.assertEquals(2, conceptList.size());
+				.getUnmappedConcepts(new ConceptSource(Integer.valueOf(sourceId.trim())), conceptClasses);
+		Assert.assertEquals(5, conceptList.size());
 	}
 }
