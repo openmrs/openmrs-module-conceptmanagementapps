@@ -232,12 +232,13 @@ public class ConceptManagementAppsServiceImpl extends BaseOpenmrsService impleme
 			}
 		}
 		finally {
-			if (spreadsheetWriter != null) {
-				spreadsheetWriter.close();
-			}
 			if (mapWriter != null) {
 				mapWriter.close();
 			}
+			if (spreadsheetWriter != null) {
+				spreadsheetWriter.close();
+			}
+			
 		}
 		
 		return mapWriter;
