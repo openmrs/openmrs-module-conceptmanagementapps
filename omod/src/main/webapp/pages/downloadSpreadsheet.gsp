@@ -16,6 +16,13 @@ def classListMap=[]
 		classListMap << classListMap2
 
 	}
+	
+def mapTypeListMap=[]
+	mapTypeList.each { maptypelist ->
+		mapTypeListMap2 = [label: maptypelist.name, value: maptypelist.id]
+		mapTypeListMap << mapTypeListMap2
+
+	}
     
 %>
 
@@ -24,13 +31,13 @@ ${ ui.includeFragment("uicommons", "validationMessages")}
 <script type="text/javascript">
     jQuery(function() {
         KeyboardController();
-    });
+    }
 </script>
 
 <script type="text/javascript">
     var breadcrumbs = [
         { icon: "icon-home", link: '/' + OPENMRS_CONTEXT_PATH + '/index.htm' },
-        { label: "${ ui.message('conceptmanagementapps.downloadspreadsheet.label') }", link: "${ ui.pageLink('conceptmanagementapps', 'downloadSpreadsheet') }" }
+        { label: "${ ui.message('conceptmanagementapps.downloadpage.title') }", link: "${ ui.pageLink('conceptmanagementapps', 'downloadSpreadsheet') }" }
     ];
  </script>
  <script type="text/javascript">
@@ -63,19 +70,20 @@ function validateForm() {
 <link rel="stylesheet" href="/openmrs/ms/uiframework/resource/referenceapplication/styles/referenceapplication.css" type="text/css"/>
 
     <h2>
-        ${ui.message("conceptmanagementapps.app.label")}
+        ${ui.message("conceptmanagementapps.downloadpage.title")}
     </h2>
     <h3>
-        ${ui.message("conceptmanagementapps.downloadpage.label")}
+        ${ui.message("conceptmanagementapps.downloadpage.subtitle")}
     </h3>
       
 <form class="simple-form-ui" name="downloadForm" method="post">
+
             <div id="showHideSourceIdValidationError" style="display: none">
-            	<span  class="required">(${ ui.message("emr.formValidation.messages.requiredField") })</span>
+            	<p  style="color:red" class="required">(${ ui.message("emr.formValidation.messages.requiredField") })</p>
             </div>
             <fieldset>        
                 ${ ui.includeFragment("uicommons", "field/dropDown", [
-                label: ui.message("conceptmanagementapps.source.label"),
+                label: ui.message("conceptmanagementapps.downloadpage.select.source.label"),
                 formFieldName: "sourceList",
                 options: sourceListMap,
                 classes: ["required"],
@@ -83,29 +91,34 @@ function validateForm() {
                	left: true]
                	)}
         	</fieldset>
+        	
+        	<fieldset>        
+                ${ ui.includeFragment("uicommons", "field/dropDown", [
+                label: ui.message("conceptmanagementapps.downloadpage.select.maptype.label"),
+                formFieldName: "mapTypeList",
+                options: mapTypeListMap,
+                maximumSize: 1,
+               	left: true]
+               	)}
+        	</fieldset>
 
-            <fieldset>
-       
             
-            	<legend>${ui.message("conceptmanagementapps.class.label")}</legend>
+       		<fieldset>
             	<div id="showHideConceptClassValidationError" style="display: none">
-            		<span  class="required">(${ ui.message("emr.formValidation.messages.requiredField") })</span>
+            	<p  style="color:red" class="required">(${ ui.message("emr.formValidation.messages.requiredField") })</p>
             	</div>
             	
-				<p>
-				<ul class="select">
-				<label  class="required"></label>
+				<div class="checkbox">
+				<label class="required">${ui.message("conceptmanagementapps.downloadpage.class.label")}</label>
+				</br>
 						<% classList.each { classlist -> %> 
-							<li>
-								<label>${ui.message(classlist.name)}</label>
-								<input type="checkbox" value=${classlist.id} name="conceptClass" id="${classlist.id}"/>
-							</li>
+							<div class="checkbox" style="float: left;width: 30%; margin-right: 1%;">
+								<p><input type="checkbox" value=${classlist.id} name="conceptClass" id="${classlist.id}"/>
+								<label>${ui.message(classlist.name)}</label></p>
+							</div>
 						<%}%>
-				</ul>
-						
-				
-				
-				</p>
+				</div>
+	
 			</fieldset>
             <div id="submit">
             <p style="display: inline"><input type="button" class="confirm" value="Download" onclick="javascript:validateForm();"/></p>

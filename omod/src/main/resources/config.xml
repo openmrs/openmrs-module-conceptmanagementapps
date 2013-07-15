@@ -25,11 +25,6 @@
 </require_modules>
 	
 	<!-- Maps hibernate file's, if present -->
-	<mappingFiles>
-				
-		ConceptManagementApps.hbm.xml
-				
-	</mappingFiles>
 
 	<!-- Internationalization -->
 	<!-- All message codes should start with ${project.parent.artifactId}. -->

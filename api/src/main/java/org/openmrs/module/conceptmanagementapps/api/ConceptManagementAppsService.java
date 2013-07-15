@@ -13,13 +13,18 @@
  */
 package org.openmrs.module.conceptmanagementapps.api;
 
+import java.io.PrintWriter;
 import java.util.List;
 
 import org.openmrs.Concept;
 import org.openmrs.ConceptClass;
 import org.openmrs.ConceptSource;
+import org.openmrs.api.APIException;
 import org.openmrs.api.OpenmrsService;
+import org.openmrs.ui.framework.page.FileDownload;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
+import org.supercsv.io.ICsvMapWriter;
 
 /**
  * This service exposes module's core functionality. It is a Spring managed bean which is configured
@@ -30,11 +35,20 @@ import org.springframework.transaction.annotation.Transactional;
  * Context.getService(ConceptManagementAppsService.class).someMethod();
  * </code>
  * 
- * @see org.openmrs.api.context.Context
+ * @see org.openmrs.api.context.Context 
  */
-@Transactional
+
 public interface ConceptManagementAppsService extends OpenmrsService {
 	
-	public List<Concept> getUnmappedConcepts(ConceptSource source, List<ConceptClass> classes);
+	@Transactional(readOnly = true)
+	public List<Concept> getUnmappedConcepts(ConceptSource conceptSource, List<ConceptClass> classesToInclude);
+	
+	@Transactional
+	public FileDownload uploadSpreadsheet(MultipartFile spreadsheetFile) throws APIException;
+	
+	@Transactional(readOnly = true)
+	public ICsvMapWriter writeFileWithMissingConceptMappings(List<Concept> conceptList, PrintWriter spreadsheetWriter,
+	                                                         String mapTypeForDefaultValue, String conceptSourceName)
+	    throws Exception;
 	
 }

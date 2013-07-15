@@ -24,26 +24,25 @@
  <link rel="stylesheet" href="/openmrs/ms/uiframework/resource/referenceapplication/styles/referenceapplication.css" type="text/css"/>
 
     <h2>
-        ${ui.message("conceptmanagementapps.app.label")}
+        ${ui.message("conceptmanagementapps.title")}
     </h2>
-    <h3>
-        ${ui.message("conceptmanagementapps.missingconceptmappings.label")}
-    </h3>
-    <fieldset>
-     	<legend>
-       	  ${ui.message("conceptmanagementapps.uploadspreadsheet.label")}
-     	</legend>
-         <p>
-         	<a href="${ui.pageLink("conceptmanagementapps", "uploadSpreadsheet")}">${ui.message("conceptmanagementapps.uploadpage.label")}</a>
-         </p>
-     </fieldset>
      <fieldset>
       	<legend>
-       	  ${ui.message("conceptmanagementapps.downloadspreadsheet.label")}
+       	  ${ui.message("conceptmanagementapps.downloadpage.title")}
     	 </legend>
      	<p>
-        	<a href="${ui.pageLink("conceptmanagementapps", "downloadSpreadsheet")}">${ui.message("conceptmanagementapps.downloadpage.label")}</a>
+        	<a href="${ui.pageLink("conceptmanagementapps", "downloadSpreadsheet")}">${ui.message("conceptmanagementapps.mainpage.downloadpage.title")}</a>
      	</p>
      </fieldset>
+     
+    <fieldset>
+     	<legend>
+       	  ${ui.message("conceptmanagementapps.uploadpage.title")}
+     	</legend>
+         <p>
+         	<a href="${ui.pageLink("conceptmanagementapps", "uploadSpreadsheet")}">${ui.message("conceptmanagementapps.mainpage.uploadpage.title")}</a>
+         </p>
+     </fieldset>
+
     
     

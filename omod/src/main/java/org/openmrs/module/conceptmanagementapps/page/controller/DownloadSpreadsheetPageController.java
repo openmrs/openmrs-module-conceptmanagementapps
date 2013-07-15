@@ -1,138 +1,90 @@
 package org.openmrs.module.conceptmanagementapps.page.controller;
 
+import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.Locale;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.Concept;
 import org.openmrs.ConceptClass;
-import org.openmrs.ConceptDescription;
-import org.openmrs.ConceptMap;
-import org.openmrs.ConceptName;
+import org.openmrs.ConceptMapType;
 import org.openmrs.ConceptSource;
 import org.openmrs.api.ConceptService;
 import org.openmrs.api.context.Context;
 import org.openmrs.module.appui.UiSessionContext;
 import org.openmrs.module.conceptmanagementapps.api.ConceptManagementAppsService;
 import org.openmrs.ui.framework.UiUtils;
-import org.openmrs.ui.framework.annotation.BindParams;
-import org.openmrs.ui.framework.page.FileDownload;
 import org.openmrs.ui.framework.page.PageModel;
+import org.openmrs.ui.framework.page.PageRequest;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.supercsv.io.ICsvMapWriter;
 
 public class DownloadSpreadsheetPageController {
 	
 	private Log log = LogFactory.getLog(this.getClass());
 	
-	public FileDownload post(UiSessionContext sessionContext, HttpServletRequest request,
-	                         @RequestParam("conceptClass") @BindParams String[] classes,
-	                         @RequestParam("sourceList") @BindParams String sourceId, UiUtils ui, PageModel model,
-	                         HttpServletResponse response) {
+	public ICsvMapWriter post(UiSessionContext sessionContext, HttpServletRequest request,
+	                          @RequestParam("conceptClass") String[] classesToInclude,
+	                          @RequestParam("sourceList") Integer sourceId, UiUtils ui, PageModel model,
+	                          PageRequest pageRequest) throws IOException, Exception {
+		
+		String mapTypeDefaultValue = request.getParameter("mapTypeList");
+		if (StringUtils.isNotEmpty(mapTypeDefaultValue) && StringUtils.isNotBlank(mapTypeDefaultValue)) {
+			mapTypeDefaultValue = Context.getConceptService().getConceptMapType(Integer.valueOf(mapTypeDefaultValue))
+			        .getName();
+		} else {
+			mapTypeDefaultValue = "";
+		}
 		
 		ConceptManagementAppsService conceptManagementAppsService = (ConceptManagementAppsService) Context
 		        .getService(ConceptManagementAppsService.class);
+		
 		ConceptService cs = Context.getConceptService();
-		String[] classArray = classes;
-		List<ConceptClass> conceptClasses = new ArrayList<ConceptClass>();
-		for (String classString : classArray) {
-			conceptClasses.add(cs.getConceptClass(Integer.valueOf(classString.trim())));
-		}
-		List<Concept> conceptList = conceptManagementAppsService.getUnmappedConcepts(Context.getConceptService()
-		        .getConceptSource(1), conceptClasses);
+		
 		List<ConceptSource> sourceList = Context.getConceptService().getAllConceptSources();
 		List<ConceptClass> classList = Context.getConceptService().getAllConceptClasses();
+		List<ConceptMapType> mapTypeList = Context.getConceptService().getActiveConceptMapTypes();
 		model.addAttribute("sourceList", sourceList);
 		model.addAttribute("classList", classList);
-		return writeToFile(conceptList, sourceId);
+		model.addAttribute("mapTypeList", mapTypeList);
+		
+		String[] classArray = classesToInclude;
+		List<ConceptClass> conceptClassesToInclude = new ArrayList<ConceptClass>();
+		for (String classString : classArray) {
+			conceptClassesToInclude.add(cs.getConceptClass(Integer.valueOf(classString.trim())));
+		}
+		
+		List<Concept> conceptList = conceptManagementAppsService.getUnmappedConcepts(Context.getConceptService()
+		        .getConceptSource(sourceId), conceptClassesToInclude);
+		
+		HttpServletResponse response = pageRequest.getResponse();
+		response.setContentType("text/csv;charset=UTF-8");
+		String theDate = new SimpleDateFormat("dMy_Hm").format(new Date());
+		String filename = "conceptsMissingMappings" + theDate + ".csv";
+		response.setHeader("Content-Disposition", "attachment; filename=" + filename);
+		
+		conceptManagementAppsService = (ConceptManagementAppsService) Context.getService(ConceptManagementAppsService.class);
+		
+		return conceptManagementAppsService.writeFileWithMissingConceptMappings(conceptList, response.getWriter(),
+		    mapTypeDefaultValue, Context.getConceptService().getConceptSource(sourceId).getName());
 		
 	}
 	
 	public void get(UiSessionContext sessionContext, PageModel model, HttpServletResponse response) throws Exception {
 		List<ConceptSource> sourceList = Context.getConceptService().getAllConceptSources();
 		List<ConceptClass> classList = Context.getConceptService().getAllConceptClasses();
+		List<ConceptMapType> mapTypeList = Context.getConceptService().getActiveConceptMapTypes();
 		model.addAttribute("sourceList", sourceList);
 		model.addAttribute("classList", classList);
+		model.addAttribute("mapTypeList", mapTypeList);
 		
-	}
-	
-	private FileDownload writeToFile(List<Concept> conceptList, String sourceIdString) {
-		
-		Locale locale = Context.getLocale();
-		String delimiter = ",";
-		String description, name;
-		String line = "" + "map type" + delimiter + "source name" + delimiter + "source code" + delimiter + "concept Id"
-		        + delimiter + "concept uuid" + delimiter + "preferred name" + delimiter + "description" + delimiter
-		        + "class" + delimiter + "datatype" + delimiter + "all existing mappings" + "\n";
-		for (Concept concept : conceptList) {
-			line += " " + delimiter + " " + delimiter + " " + delimiter
-			
-			+ concept.getConceptId() + delimiter + concept.getUuid() + delimiter;
-			ConceptName cn = concept.getName(locale);
-			if (cn == null)
-				name = "";
-			else
-				name = cn.getName();
-			
-			ConceptDescription cd = concept.getDescription(locale);
-			if (cd == null)
-				description = "";
-			else
-				description = cd.getDescription();
-			
-			line += '"' + name.replace("\"", "\"\"") + "\",";
-			
-			if (description == null)
-				description = "";
-			line = line + '"' + description.replace("\"", "\"\"") + "\",";
-			line += '"';
-			if (concept.getConceptClass() != null)
-				line += concept.getConceptClass().getName();
-			line += "\",";
-			
-			line += '"';
-			if (concept.getDatatype() != null)
-				line += concept.getDatatype().getName();
-			line += "\",";
-			
-			String tmp = "";
-			for (ConceptMap cm : concept.getConceptMappings()) {
-				if (cm.getConceptMapType() != null) {
-					name = cm.getConceptMapType().getName();
-					tmp += name.trim().replace("\"", "\"\"");
-					tmp += " ";
-					
-				}
-				if (cm.getConceptReferenceTerm() != null) {
-					name = cm.getConceptReferenceTerm().getConceptSource().getName().toString();
-					tmp += name.trim().replace("\"", "\"\"") + "\n";
-					
-				}
-			}
-			if (tmp.length() > 0 && tmp.charAt(tmp.length() - 1) == '\n') {
-				tmp = tmp.substring(0, tmp.length() - 1);
-			}
-			if (tmp.trim().length() < 1) {
-				tmp = "    ";
-				
-			}
-			
-			line += '"' + tmp + "\"\n";
-			
-			tmp = "";
-			
-		}
-		String s = new SimpleDateFormat("dMy_Hm").format(new Date());
-		
-		String contentType = "text/csv;charset=UTF-8";
-		String filename = "conceptsMissingMappings" + s + "_" + sourceIdString + ".csv";
-		FileDownload missingMappingsFile = new FileDownload(filename, contentType, line.getBytes());
-		return missingMappingsFile;
 	}
 	
 }
