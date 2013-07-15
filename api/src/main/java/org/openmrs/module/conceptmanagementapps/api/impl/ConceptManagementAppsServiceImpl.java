@@ -153,13 +153,11 @@ public class ConceptManagementAppsServiceImpl extends BaseOpenmrsService impleme
 		if (!hasErrors) {
 			
 			setMapAndSaveConcept(spreadsheetFile);
-			
-		}
-		if (fileShowingErrors.getFileContent().length == 0) {
 			return null;
-		} else {
-			return fileShowingErrors;
 		}
+
+			return fileShowingErrors;
+		
 		
 	}
 	

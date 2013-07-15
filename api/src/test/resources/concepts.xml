@@ -1,0 +1,170 @@
+<?xml version='1.0' encoding='UTF-8'?>
+
+<dataset>
+
+	<concept concept_id="2222" retired="false" datatype_id="2"
+		class_id="2" is_set="false" creator="1" date_created="2005-01-01 00:00:00.0"
+		uuid="957eba27-2b38-43e8-91a9-4dfe3956a52d" />
+
+	<concept concept_id="22222" retired="false" datatype_id="2"
+		class_id="2" is_set="false" creator="1" date_created="2005-01-01 00:00:00.0"
+		uuid="957eba27-2b38-43e8-91a9-4dfe3956a34d" />
+
+	<concept concept_id="175" retired="false" datatype_id="2"
+		class_id="2" is_set="false" creator="1" date_created="2005-01-01 00:00:00.0"
+		uuid="957eba27-2b38-43e8-91a9-4dfe3956a32d" />
+
+	<concept concept_id="225" retired="false" datatype_id="1"
+		class_id="2" is_set="false" creator="1" date_created="2005-01-01 00:00:00.0"
+		uuid="92b910bd-298c-4ecf-a632-661ae2f446bf" />
+
+	<concept concept_id="226" retired="false" datatype_id="1"
+		class_id="3" is_set="false" creator="1" date_created="2005-01-01 00:00:00.0"
+		uuid="92b910bd-298c-4ecf-a632-661ae2f446bg" />
+
+	<concept concept_id="227" retired="false" datatype_id="1"
+		class_id="2" is_set="false" creator="1" date_created="2005-01-01 00:00:00.0"
+		uuid="92b910bd-298c-4ecf-a632-661ae2f446bh" />
+
+	<concept concept_id="300" retired="false" datatype_id="1"
+		class_id="2" is_set="false" creator="1" date_created="2005-01-01 00:00:00.0"
+		uuid="92b910bd-300c-4ecf-a632-661ae2f446bh" />
+
+	<concept_datatype concept_datatype_id="1" name="Numeric"
+		hl7_abbreviation="NM" description="Numeric value, including integer or float"
+		creator="1" date_created="2005-01-01 00:00:00.0" retired="false"
+		uuid="598756b4-9676-4b54-8a35-6b368088c505" />
+
+	<concept_datatype concept_datatype_id="3" name="Text"
+		hl7_abbreviation="ST" description="Structured text" creator="1"
+		date_created="2005-01-01 00:00:00.0" retired="false"
+		uuid="1f9c5fae-6f88-4ad0-a74c-6e7705edd52e" />
+
+	<concept_description concept_description_id="1"
+		concept_id="1" description="this is a description" locale="en"
+		creator="1" date_created="2005-01-01 00:00:00.0" uuid="0a6f34ea-043a-4e69-b418-1d7bb66b99b6" />
+
+	<concept_description concept_description_id="2"
+		concept_id="2" description="this is another description" locale="en"
+		creator="1" date_created="2005-01-01 00:00:00.0" uuid="a72dac37-b593-46a1-a24b-e3da6dbcc521" />
+
+	<concept_name concept_id="1" name="Some non numeric concept name"
+		locale="en" creator="1" date_created="2005-01-01 00:00:00.0"
+		concept_name_id="1" concept_name_type="FULLY_SPECIFIED"
+		locale_preferred="0" voided="false" uuid="8edfd54f-b189-43dd-86e0-913591978e48" />
+
+	<concept_name concept_id="225" name="Some numeric concept name"
+		locale="en" creator="1" date_created="2005-01-01 00:00:00.0"
+		concept_name_id="2" concept_name_type="FULLY_SPECIFIED"
+		locale_preferred="0" voided="false" uuid="d8402dab-1e32-4f17-9654-a889a4eb9a89" />
+
+	<concept_name concept_id="2" name="Numeric name with en_GB locale"
+		locale="en_GB" creator="1" date_created="2005-01-01 00:00:00.0"
+		concept_name_id="3" concept_name_type="" locale_preferred="0" voided="false"
+		uuid="bbbb2dab-1e32-4f17-a654-0000a4eb9a8e" />
+
+	<concept_numeric concept_id="2" hi_absolute="123.0"
+		precise="false" />
+
+	<concept_class concept_class_id="1" name="Test1"
+		description="Acq. during patient encounter (vitals, labs, etc.)"
+		creator="1" date_created="2004-02-02 00:00:00" retired="0"
+		uuid="8d4907b2-c2cc-11de-8d13-0010c6dffd0f" />
+
+	<concept_class concept_class_id="2" name="Test2"
+		description="Acq. during patient encounter (vitals, labs, etc.)"
+		creator="1" date_created="2004-02-02 00:00:00" retired="0"
+		uuid="8d4907b2-c2cc-11de-8d13-0010c6dffd0y" />
+
+	<concept_class concept_class_id="3" name="Test3"
+		description="Acq. during patient encounter (vitals, labs, etc.)"
+		creator="1" date_created="2004-02-02 00:00:00" retired="0"
+		uuid="8d4907b2-c2cc-11de-8d13-0010c6dffd0r" />
+
+	<concept_class concept_class_id="4" name="Test4"
+		description="Acq. during patient encounter (vitals, labs, etc.)"
+		creator="1" date_created="2004-02-02 00:00:00" retired="0"
+		uuid="8d492ee0-c2cc-11de-8d13-0010c6dffd0f" />
+
+	<concept_reference_term
+		concept_reference_term_id="17103" concept_source_id="6" name="reftermTest"
+		code="123456" description="test" creator="1" date_created="2013-06-22 20:51:38"
+		retired="0" uuid="0f5812f8-b86f-4909-9927-f8c7fwq3a303" />
+
+	<concept_reference_term
+		concept_reference_term_id="171023" concept_source_id="6" name="refterm1"
+		code="1234" description="test" creator="1" date_created="2013-06-22 20:51:38"
+		retired="0" uuid="0f5812f8-b86f-4909-9927-f8c7f4a3a303" />
+
+	<concept_reference_term
+		concept_reference_term_id="29" concept_source_id="5" name="refterm1"
+		code="1234" description="test" creator="1" date_created="2013-06-22 20:51:38"
+		retired="0" uuid="0f5812f8-b86l-4909-9927-f8c7f4a3a303" />
+
+	<concept_reference_term
+		concept_reference_term_id="30" concept_source_id="1" name="refterm2"
+		code="12345" description="test" creator="1" date_created="2013-06-22 20:51:38"
+		retired="0" uuid="b80ee1fc-0604-4810-9424-5ed972383418" />
+
+	<concept_reference_term
+		concept_reference_term_id="300" concept_source_id="2" name="refterm200"
+		code="1234500" description="test" creator="1" date_created="2013-06-22 20:51:38"
+		retired="0" uuid="b80ee1fc-2004-4810-9424-5ed972383418" />
+
+	<concept_reference_source concept_source_id="1"
+		name="SNOMED CT" hl7_code="NULL" description="test" creator="1"
+		date_created="2013-06-22 20:51:38" retired="0"
+		uuid="b86ee1fc-0604-4810-i424-5ed972383418" />
+
+	<concept_reference_source concept_source_id="2"
+		name="SNOMED NP" hl7_code="NULL" description="test" creator="1"
+		date_created="2013-06-22 20:51:38" retired="0"
+		uuid="b86ee1fc-0640-4810-i424-5ed972383418" />
+
+	<concept_reference_map concept_map_id="23"
+		concept_reference_term_id="171023" concept_map_type_id="1" creator="1"
+		date_created="2013-06-22 20:52:28" concept_id="225"
+		uuid="a9d5a297-5098-4dda-9066-b0y96e66e734" />
+
+	<concept_reference_map concept_map_id="29"
+		concept_reference_term_id="30" concept_map_type_id="1" creator="1"
+		date_created="2013-06-22 20:52:28" concept_id="225"
+		uuid="a9d5a297-5098-4dda-9066-b0f96e66e734" />
+
+	<concept_reference_map concept_map_id="24"
+		concept_reference_term_id="29" concept_map_type_id="1" creator="1"
+		date_created="2013-06-22 20:52:28" concept_id="175"
+		uuid="e6046af6-da46-4ee4-90dd-42869d50669c" />
+
+	<concept_reference_map concept_map_id="171023"
+		creator="1" date_created="2013-06-28 05:56:32" concept_id="225"
+		uuid="65fd41b3-882c-4bea-b34c-4f2ee2f2p69e" concept_reference_term_id="29"
+		concept_map_type_id="1" />
+
+	<concept_reference_map concept_map_id="25"
+		concept_reference_term_id="17103" concept_map_type_id="1" creator="1"
+		date_created="2013-06-22 20:52:28" concept_id="225"
+		uuid="65fd41b3-882c-4bea-b34c-4f2ee2f2d69e" />
+
+	<concept_reference_map concept_map_id="26"
+		concept_reference_term_id="29" concept_map_type_id="1" creator="1"
+		date_created="2013-06-22 20:52:28" concept_id="225"
+		uuid="65fd41b3-882c-4bea-b34c-4f2ee2f2d69f" />
+
+	<concept_reference_map concept_map_id="27"
+		concept_reference_term_id="29" concept_map_type_id="1" creator="1"
+		date_created="2013-06-22 20:52:28" concept_id="225"
+		uuid="65fd41b3-882c-4bea-b34c-4f2ee2f2d69g" />
+
+	<concept_reference_map concept_map_id="27"
+		concept_reference_term_id="17103" concept_map_type_id="1" creator="1"
+		date_created="2013-06-22 20:52:28" concept_id="227"
+		uuid="65fd41b3-882c-4bea-b34p-4f2ee2f2d69g" />
+
+	<concept_reference_map concept_map_id="300"
+		concept_reference_term_id="300" concept_map_type_id="2" creator="1"
+		date_created="2013-06-22 20:52:28" concept_id="300"
+		uuid="65fd41b3-300c-4bea-b34p-4f2ee2f2d69g" />
+
+</dataset>
+
