@@ -23,6 +23,25 @@ ${ ui.includeFragment("uicommons", "validationMessages")}
         { label: "${ ui.message("conceptmanagementapps.uploadpage.title") }", link: "${ ui.pageLink("conceptmanagementapps", "uploadSpreadsheet") }" }
     ];
  </script>
+ <script type="text/javascript">
+
+function validateForm() {  
+	var fileToUploadErrText = document.getElementById("showHideFileUploadValidationError");
+	var error=0;
+    fileToUploadErrText.style.display = "none";
+    if(document.getElementsByName("spreadsheet")[0].value.length==0){
+        fileToUploadErrText.style.display = "block";
+        error=1;
+    }
+    if(error==1){
+    	return false;
+    }
+    else 
+    { 
+        document.uploadform.submit();
+    }
+}
+</script>
 
 <div>
 	<p>
@@ -35,17 +54,13 @@ ${ ui.includeFragment("uicommons", "validationMessages")}
         ${ui.message("conceptmanagementapps.uploadpage.subtitle")}
     </h3>
 
-<form method="post" encType="multipart/form-data">
-
-
-     <p class="input-position-class">
+<form method="post" name="uploadform" encType="multipart/form-data">
+    	 <div id="showHideFileUploadValidationError" style="display: none">
+     		<p  style="color:red" class="required">${ ui.message("emr.formValidation.messages.requiredField") }</p>
+     	</div>
      	<b>${ui.message("conceptmanagementapps.uploadpage.upload.file.label")} <input type="file" name="spreadsheet"/></b>
-     </p>
-	<p>
     	<div id="submit">
-        	<p style="display: inline"><input type="submit" class="confirm" value="Upload" /></p>
+        	<p style="display: inline"><input type="button" class="confirm" value="Upload" onclick="javascript:validateForm();"/></p>
         </div>
-
-   	</p>
 </form>
 </div>
