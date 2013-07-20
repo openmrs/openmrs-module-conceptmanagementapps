@@ -18,6 +18,7 @@ import java.util.List;
 
 import org.openmrs.Concept;
 import org.openmrs.ConceptClass;
+import org.openmrs.ConceptReferenceTerm;
 import org.openmrs.ConceptSource;
 import org.openmrs.api.APIException;
 import org.openmrs.api.OpenmrsService;
@@ -35,7 +36,7 @@ import org.supercsv.io.ICsvMapWriter;
  * Context.getService(ConceptManagementAppsService.class).someMethod();
  * </code>
  * 
- * @see org.openmrs.api.context.Context 
+ * @see org.openmrs.api.context.Context
  */
 
 public interface ConceptManagementAppsService extends OpenmrsService {
@@ -45,6 +46,16 @@ public interface ConceptManagementAppsService extends OpenmrsService {
 	
 	@Transactional
 	public FileDownload uploadSpreadsheet(MultipartFile spreadsheetFile) throws APIException;
+	
+	@Transactional
+	public void uploadSnomedFile(MultipartFile snomedFile) throws APIException;
+	
+	@Transactional(readOnly = true)
+	public List<ConceptReferenceTerm> getReferenceTermsForSpecifiedSource(ConceptSource specifiedSource, Integer startIndex,
+	                                                                      Integer numToReturn);
+	
+	@Transactional(readOnly = true)
+	public List<ConceptReferenceTerm> getReferenceTermsForAllSources(Integer startIndex, Integer numToReturn);
 	
 	@Transactional(readOnly = true)
 	public ICsvMapWriter writeFileWithMissingConceptMappings(List<Concept> conceptList, PrintWriter spreadsheetWriter,

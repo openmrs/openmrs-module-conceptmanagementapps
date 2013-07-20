@@ -15,12 +15,12 @@ package org.openmrs.module.conceptmanagementapps.api.db;
 
 import java.util.List;
 
-import org.openmrs.api.db.DAOException;
-import org.openmrs.module.conceptmanagementapps.api.ConceptManagementAppsService;
-
 import org.openmrs.Concept;
 import org.openmrs.ConceptClass;
+import org.openmrs.ConceptReferenceTerm;
 import org.openmrs.ConceptSource;
+import org.openmrs.api.db.DAOException;
+import org.openmrs.module.conceptmanagementapps.api.ConceptManagementAppsService;
 
 /**
  * Database methods for {@link ConceptManagementAppsService}.
@@ -28,4 +28,11 @@ import org.openmrs.ConceptSource;
 public interface ConceptManagementAppsDAO {
 	
 	public List<Concept> getUnmappedConcepts(ConceptSource source, List<ConceptClass> classes) throws DAOException;
+	
+	public List<ConceptReferenceTerm> getReferenceTermsForSpecifiedSource(ConceptSource specifiedSource, Integer startIndex,
+	                                                                      Integer numToReturn) throws DAOException;
+	
+	public List<ConceptReferenceTerm> getReferenceTermsForAllSources(Integer startIndex, Integer numToReturn)
+	    throws DAOException;
+	
 }

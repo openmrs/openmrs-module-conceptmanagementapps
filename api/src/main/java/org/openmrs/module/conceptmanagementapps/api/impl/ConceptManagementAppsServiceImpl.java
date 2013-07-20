@@ -59,6 +59,8 @@ public class ConceptManagementAppsServiceImpl extends BaseOpenmrsService impleme
 	
 	protected Log log = LogFactory.getLog(getClass());
 	
+	private static final CsvPreference TAB_DELIMITED = new CsvPreference.Builder('\"', '\t', "\n").build();
+	
 	private ConceptManagementAppsDAO dao;
 	
 	/**
@@ -79,6 +81,17 @@ public class ConceptManagementAppsServiceImpl extends BaseOpenmrsService impleme
 	public List<Concept> getUnmappedConcepts(ConceptSource conceptSource, List<ConceptClass> classesToInclude) {
 		
 		return this.dao.getUnmappedConcepts(conceptSource, classesToInclude);
+	}
+	
+	@Transactional(readOnly = true)
+	public List<ConceptReferenceTerm> getReferenceTermsForSpecifiedSource(ConceptSource specifiedSource, Integer startIndex,
+	                                                                      Integer numToReturn) {
+		return this.dao.getReferenceTermsForSpecifiedSource(specifiedSource, startIndex, numToReturn);
+	}
+	
+	@Transactional(readOnly = true)
+	public List<ConceptReferenceTerm> getReferenceTermsForAllSources(Integer startIndex, Integer numToReturn) {
+		return this.dao.getReferenceTermsForAllSources(startIndex, numToReturn);
 	}
 	
 	@Transactional
@@ -155,9 +168,56 @@ public class ConceptManagementAppsServiceImpl extends BaseOpenmrsService impleme
 			setMapAndSaveConcept(spreadsheetFile);
 			return null;
 		}
-
-			return fileShowingErrors;
 		
+		return fileShowingErrors;
+		
+	}
+	
+	@Transactional
+	public void uploadSnomedFile(MultipartFile snomedFile) throws APIException {
+		
+		ICsvMapReader mapReader = null;
+		
+		try {
+			ConceptService cs = Context.getConceptService();
+			
+			// load CSV File
+			mapReader = new CsvMapReader(new InputStreamReader(snomedFile.getInputStream()), CsvPreference.TAB_PREFERENCE);
+			
+			// the header columns are used as the keys to the Map
+			final String[] header = mapReader.getHeader(true);
+			final CellProcessor[] processors = getSnomedFileProcessors();
+			List<String> fileContents = new ArrayList<String>();
+			for (Map<String, Object> mapList = mapReader.read(header, processors); mapList != null; mapList = mapReader
+			        .read(header, processors)) {
+				fileContents.add((String) mapList.get("map type"));				
+			}
+			System.out.println("done line: "+fileContents.get(1));
+		}
+		
+		catch (APIException e) {
+			e.printStackTrace();
+			throw new APIException("error on row " + mapReader.getRowNumber() + "," + mapReader.getUntokenizedRow() + e);
+		}
+		catch (FileNotFoundException e) {
+			e.printStackTrace();
+		}
+		catch (IOException e) {
+			e.printStackTrace();
+		}
+		
+		finally {
+			
+			if (mapReader != null) {
+				
+				try {
+					mapReader.close();
+				}
+				catch (IOException e) {
+					e.printStackTrace();
+				}
+			}
+		}
 		
 	}
 	
@@ -180,7 +240,6 @@ public class ConceptManagementAppsServiceImpl extends BaseOpenmrsService impleme
 			
 			final CellProcessor[] downloadProcessors = getSpreadsheetProcessors();
 			
-			// write the header
 			mapWriter.writeHeader(header);
 			String mapTypeValue;
 			if (StringUtils.isNotEmpty(mapTypeDefaultValue) && StringUtils.isNotBlank(mapTypeDefaultValue)) {
@@ -189,6 +248,7 @@ public class ConceptManagementAppsServiceImpl extends BaseOpenmrsService impleme
 			} else {
 				mapTypeValue = " ";
 			}
+			
 			for (Concept concept : conceptList) {
 				
 				conceptsMissingMappings.put(header[0], mapTypeValue);
@@ -273,6 +333,21 @@ public class ConceptManagementAppsServiceImpl extends BaseOpenmrsService impleme
 		        new Optional(), // class
 		        new Optional(), // datatype
 		        new Optional() // all existing mappings
+		};
+		
+		return processors;
+	}
+	
+	/**
+	 * Sets up the processors used for the spreadsheet to download.
+	 * 
+	 * @return the cell processors
+	 */
+	private static CellProcessor[] getSnomedFileProcessors() {
+		
+		final CellProcessor[] processors = new CellProcessor[] { new Optional(), // map type
+		        new Optional() // source name
+		
 		};
 		
 		return processors;

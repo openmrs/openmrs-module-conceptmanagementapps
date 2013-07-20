@@ -92,6 +92,22 @@ public class ConceptManagementAppsServiceTest extends BaseModuleContextSensitive
 	}
 	
 	@Test
+	public void uploadSnomedFile_shouldPassWithoutErrors() throws Exception {
+		conceptManagementAppsService = (ConceptManagementAppsService) Context.getService(ConceptManagementAppsService.class);
+		executeDataSet("concepts.xml");
+		final String fileName = "test.csv";
+		String line = "map type	source name \n";
+		line += "same-as	SNOMED CT \n";
+		line += "same-as	SNOMED CT \n";
+		line += "same-as	SNOMED CT \n";
+		
+		final byte[] content = line.getBytes();
+		MockMultipartFile mockMultipartFile = new MockMultipartFile("content", fileName, "text/plain", content);
+		conceptManagementAppsService.uploadSnomedFile(mockMultipartFile);
+		
+	}
+	
+	@Test
 	public void downloadFileWithMissingConceptMappings_shouldPassWithoutErrors() throws Exception {
 		executeDataSet("concepts.xml");
 		PrintWriter pw = mock(PrintWriter.class);

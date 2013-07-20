@@ -69,6 +69,7 @@
 		<dependency>
 			<groupId>org.openmrs.module</groupId>
 			<artifactId>uiframework-api</artifactId>
+			<version>${uiframeworkVersion}</version>
 		</dependency>
 
 		<dependency>
@@ -84,6 +85,7 @@
 			<version>${uicommonsVersion}</version>
 			<scope>provided</scope>
 		</dependency>
+		
 	</dependencies>
 
 	<build>

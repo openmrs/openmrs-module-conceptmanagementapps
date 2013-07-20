@@ -2,10 +2,6 @@
     
     ui.decorateWith("appui", "standardEmrPage");
     ui.includeCss("uicommons", "styleguide/index.css");
-    ui.includeCss("uicommons", "styleguide/jquery.toastmessage.css");
-    ui.includeCss("uicommons", "styleguide/jquery-ui-1.9.2.custom.min.css");
-    ui.includeJavascript("uicommons", "jquery-1.8.3.min.js");
-    ui.includeJavascript("uicommons", "script.js");
     ui.includeCss("uicommons", "emr/simpleFormUi.css", -200);
       
 %>
@@ -26,6 +22,10 @@
     <h2>
         ${ui.message("conceptmanagementapps.title")}
     </h2>
+    
+    <h3>
+        ${ui.message("conceptmanagementapps.mainpage.missingconceptmappings.title")}
+    </h3>
      <fieldset>
       	<legend>
        	  ${ui.message("conceptmanagementapps.downloadpage.title")}

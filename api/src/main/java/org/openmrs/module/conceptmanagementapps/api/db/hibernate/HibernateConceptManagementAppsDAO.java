@@ -25,6 +25,7 @@ import org.hibernate.criterion.Restrictions;
 import org.hibernate.transform.DistinctRootEntityResultTransformer;
 import org.openmrs.Concept;
 import org.openmrs.ConceptClass;
+import org.openmrs.ConceptReferenceTerm;
 import org.openmrs.ConceptSource;
 import org.openmrs.api.db.DAOException;
 import org.openmrs.module.conceptmanagementapps.api.db.ConceptManagementAppsDAO;
@@ -58,7 +59,6 @@ public class HibernateConceptManagementAppsDAO implements ConceptManagementAppsD
 		List<Concept> conceptsWithNoMappings = getConceptsWithNoMappings(classesToInclude);
 		List<Concept> conceptsWithOtherMappings = getConceptsWithMappingsButNotToThisSource(conceptSource, classesToInclude);
 		
-		//Combine results
 		List<Concept> allConceptsNotMappedToOurSource = conceptsWithOtherMappings;
 		allConceptsNotMappedToOurSource.addAll(conceptsWithNoMappings);
 		
@@ -130,4 +130,47 @@ public class HibernateConceptManagementAppsDAO implements ConceptManagementAppsD
 		return (List<Concept>) query.list();
 	}
 	
+	/**
+	 * @see org.openmrs.module.conceptmanagementapps.api.db.ConceptManagementAppsDAO#getConceptReferenceTermsBySource(ConceptSource)
+	 */
+	@SuppressWarnings("unchecked")
+	@Override
+	public List<ConceptReferenceTerm> getReferenceTermsForSpecifiedSource(ConceptSource specifiedSource, Integer startIndex,
+	                                                                      Integer numToReturn) throws DAOException {
+		
+		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(ConceptReferenceTerm.class);
+		criteria.add(Restrictions.eq("conceptSource", specifiedSource));
+		
+		if (startIndex != null)
+			criteria.setFirstResult(startIndex);
+		if (numToReturn != null && numToReturn > 0) {
+			criteria.setMaxResults(numToReturn);
+		} else {
+			criteria.setMaxResults(1000);
+		}
+		
+		return (List<ConceptReferenceTerm>) criteria.list();
+	}
+	
+	/**
+	 * @see org.openmrs.module.conceptmanagementapps.api.db.ConceptManagementAppsDAO#getReferenceTermsForAllSources(int
+	 *      startIndex, int numToReturn)
+	 */
+	@SuppressWarnings("unchecked")
+	@Override
+	public List<ConceptReferenceTerm> getReferenceTermsForAllSources(Integer startIndex, Integer numToReturn)
+	    throws DAOException {
+		
+		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(ConceptReferenceTerm.class);
+		
+		if (startIndex != null)
+			criteria.setFirstResult(startIndex);
+		if (numToReturn != null && numToReturn > 0) {
+			criteria.setMaxResults(numToReturn);
+		} else {
+			criteria.setMaxResults(1000);
+		}
+		
+		return (List<ConceptReferenceTerm>) criteria.list();
+	}
 }

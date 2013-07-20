@@ -19,10 +19,10 @@
 	<!-- Module Activator -->
 	<activator>${project.parent.groupId}.${project.parent.artifactId}.ConceptManagementAppsActivator</activator>
 	<require_modules>
-    <require_module>
-        org.openmrs.module.uiframework
-    </require_module>
-</require_modules>
+    <require_module version="${uiframeworkVersion}">org.openmrs.module.uiframework</require_module>
+    <require_module version="${uicommonsVersion}">org.openmrs.module.uicommons</require_module>
+    <require_module version="${appuiVersion}">org.openmrs.module.appui</require_module>
+	</require_modules>
 	
 	<!-- Maps hibernate file's, if present -->
 
