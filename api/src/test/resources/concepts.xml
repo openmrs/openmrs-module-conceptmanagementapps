@@ -102,8 +102,8 @@
 		retired="0" uuid="0f5812f8-b86l-4909-9927-f8c7f4a3a303" />
 
 	<concept_reference_term
-		concept_reference_term_id="30" concept_source_id="1" name="refterm2"
-		code="12345" description="test" creator="1" date_created="2013-06-22 20:51:38"
+		concept_reference_term_id="30" concept_source_id="1" name="" code="100005"
+		description="test" creator="1" date_created="2013-06-22 20:51:38"
 		retired="0" uuid="b80ee1fc-0604-4810-9424-5ed972383418" />
 
 	<concept_reference_term

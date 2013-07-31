@@ -14,6 +14,7 @@
 package org.openmrs.module.conceptmanagementapps.api.impl;
 
 import java.io.FileNotFoundException;
+import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
@@ -38,12 +39,15 @@ import org.openmrs.ConceptSource;
 import org.openmrs.api.APIException;
 import org.openmrs.api.ConceptService;
 import org.openmrs.api.context.Context;
+import org.openmrs.api.db.DAOException;
 import org.openmrs.api.impl.BaseOpenmrsService;
 import org.openmrs.module.conceptmanagementapps.api.ConceptManagementAppsService;
+import org.openmrs.module.conceptmanagementapps.api.CsvUnescapedQuoteTokenizer;
 import org.openmrs.module.conceptmanagementapps.api.db.ConceptManagementAppsDAO;
 import org.openmrs.ui.framework.page.FileDownload;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.multipart.commons.CommonsMultipartResolver;
 import org.supercsv.cellprocessor.Optional;
 import org.supercsv.cellprocessor.ift.CellProcessor;
 import org.supercsv.io.CsvMapReader;
@@ -84,14 +88,21 @@ public class ConceptManagementAppsServiceImpl extends BaseOpenmrsService impleme
 	}
 	
 	@Transactional(readOnly = true)
-	public List<ConceptReferenceTerm> getReferenceTermsForSpecifiedSource(ConceptSource specifiedSource, Integer startIndex,
-	                                                                      Integer numToReturn) {
-		return this.dao.getReferenceTermsForSpecifiedSource(specifiedSource, startIndex, numToReturn);
+	public List<ConceptReferenceTerm> getConceptReferenceTerms(ConceptSource specifiedSource, Integer startIndex,
+	                                                           Integer numToReturn, String sortColumn, int order)
+	    throws DAOException {
+		
+		return this.dao.getConceptReferenceTerms(specifiedSource, startIndex, numToReturn, sortColumn, order);
 	}
 	
 	@Transactional(readOnly = true)
-	public List<ConceptReferenceTerm> getReferenceTermsForAllSources(Integer startIndex, Integer numToReturn) {
-		return this.dao.getReferenceTermsForAllSources(startIndex, numToReturn);
+	public List<ConceptReferenceTerm> getConceptReferenceTermsWithQuery(String query, ConceptSource conceptSource,
+	                                                                    Integer start, Integer length,
+	                                                                    boolean includeRetired, String sortColumn, int order)
+	    throws APIException {
+		
+		return this.dao.getConceptReferenceTermsWithQuery(query, conceptSource, start, length, includeRetired, sortColumn,
+		    order);
 	}
 	
 	@Transactional
@@ -106,15 +117,12 @@ public class ConceptManagementAppsServiceImpl extends BaseOpenmrsService impleme
 		try {
 			ConceptService cs = Context.getConceptService();
 			
-			// load CSV File
 			mapReader = new CsvMapReader(new InputStreamReader(spreadsheetFile.getInputStream()),
 			        CsvPreference.STANDARD_PREFERENCE);
 			
-			// the header columns are used as the keys to the Map
 			final String[] header = mapReader.getHeader(true);
 			final CellProcessor[] processors = getSpreadsheetProcessors();
 			
-			// Prepare Map for mapping between content and header CSV
 			String delimiter = ",";
 			fileLines.add("errors - delete this column to resubmit" + delimiter + "map type" + delimiter + "source name"
 			        + delimiter + "source code" + delimiter + "concept Id" + delimiter + "concept uuid" + delimiter
@@ -174,50 +182,9 @@ public class ConceptManagementAppsServiceImpl extends BaseOpenmrsService impleme
 	}
 	
 	@Transactional
-	public void uploadSnomedFile(MultipartFile snomedFile) throws APIException {
+	public void readInSnomedFile(String snomedFile1) throws APIException {
 		
-		ICsvMapReader mapReader = null;
-		
-		try {
-			ConceptService cs = Context.getConceptService();
-			
-			// load CSV File
-			mapReader = new CsvMapReader(new InputStreamReader(snomedFile.getInputStream()), CsvPreference.TAB_PREFERENCE);
-			
-			// the header columns are used as the keys to the Map
-			final String[] header = mapReader.getHeader(true);
-			final CellProcessor[] processors = getSnomedFileProcessors();
-			List<String> fileContents = new ArrayList<String>();
-			for (Map<String, Object> mapList = mapReader.read(header, processors); mapList != null; mapList = mapReader
-			        .read(header, processors)) {
-				fileContents.add((String) mapList.get("map type"));				
-			}
-			System.out.println("done line: "+fileContents.get(1));
-		}
-		
-		catch (APIException e) {
-			e.printStackTrace();
-			throw new APIException("error on row " + mapReader.getRowNumber() + "," + mapReader.getUntokenizedRow() + e);
-		}
-		catch (FileNotFoundException e) {
-			e.printStackTrace();
-		}
-		catch (IOException e) {
-			e.printStackTrace();
-		}
-		
-		finally {
-			
-			if (mapReader != null) {
-				
-				try {
-					mapReader.close();
-				}
-				catch (IOException e) {
-					e.printStackTrace();
-				}
-			}
-		}
+		readDescriptionSnomedFileAndUpdateRefTerms(snomedFile1);
 		
 	}
 	
@@ -307,13 +274,105 @@ public class ConceptManagementAppsServiceImpl extends BaseOpenmrsService impleme
 	
 	private FileDownload writeToFile(List<String> lines) {
 		String linesShowingIfThereAreErrors = "";
+		
 		for (String aline : lines) {
+			
 			linesShowingIfThereAreErrors += aline + "\n";
 		}
+		
 		String theDate = new SimpleDateFormat("dMy_Hm").format(new Date());
 		String contentType = "text/csv;charset=UTF-8";
 		String errorFilename = "conceptsMissingMappingsErrors" + theDate + ".csv";
+		
 		return new FileDownload(errorFilename, contentType, linesShowingIfThereAreErrors.getBytes());
+	}
+	
+	private void readDescriptionSnomedFileAndUpdateRefTerms(String snomedFile) {
+		ICsvMapReader mapReader = null;
+		
+		try {
+			
+			mapReader = new CsvMapReader(new CsvUnescapedQuoteTokenizer(new FileReader(snomedFile),
+			        CsvPreference.TAB_PREFERENCE), CsvPreference.TAB_PREFERENCE);
+			
+			final String[] header = mapReader.getHeader(true);
+			final CellProcessor[] processors = getSnomedFileProcessors();
+			HashMap<String, String[]> hmOfCodes = new HashMap<String, String[]>();
+			
+			for (Map<String, Object> mapList = mapReader.read(header, processors); mapList != null; mapList = mapReader
+			        .read(header, processors)) {
+				
+				getHashMapOfCodes(mapList, hmOfCodes);
+			}
+			
+			updateRefTableWithNamesFromHashMap(hmOfCodes);
+		}
+		
+		catch (APIException e) {
+			e.printStackTrace();
+		}
+		catch (FileNotFoundException e) {
+			e.printStackTrace();
+		}
+		catch (IOException e) {
+			e.printStackTrace();
+		}
+		
+		finally {
+			
+			if (mapReader != null) {
+				
+				try {
+					mapReader.close();
+				}
+				catch (IOException e) {
+					e.printStackTrace();
+				}
+			}
+		}
+	}
+	
+	private HashMap<String, String[]> getHashMapOfCodes(Map<String, Object> mapList, HashMap<String, String[]> hmOfCodes) {
+		
+		if (StringUtils.equals((String) mapList.get("active"), "1")) {
+			if (hmOfCodes.get((String) mapList.get("conceptId")) != null) {
+				if (Integer.valueOf((String) mapList.get("effectiveTime")) > Integer.valueOf(hmOfCodes.get((String) mapList
+				        .get("conceptId"))[0])) {
+					
+					hmOfCodes.remove((String) mapList.get("conceptId"));
+					String[] rowContents = new String[] { (String) mapList.get("effectiveTime"),
+					        (String) mapList.get("term") };
+					hmOfCodes.put((String) mapList.get("conceptId"), rowContents);
+					
+				}
+			} else {
+				
+				String[] rowContents = new String[] { (String) mapList.get("effectiveTime"), (String) mapList.get("term") };
+				hmOfCodes.put((String) mapList.get("conceptId"), rowContents);
+			}
+		}
+		return hmOfCodes;
+	}
+	
+	private void updateRefTableWithNamesFromHashMap(HashMap<String, String[]> hmOfCodes) {
+		
+		ConceptSource snomedSource = Context.getConceptService().getConceptSource(1);
+		List<ConceptReferenceTerm> sourceRefTerms = getConceptReferenceTerms(snomedSource, 0, -1, "id", 1);
+		
+		for (ConceptReferenceTerm term : sourceRefTerms) {
+			
+			if (StringUtils.isEmpty(term.getName()) || StringUtils.isBlank(term.getName())) {
+				
+				if (hmOfCodes.get(term.getCode()) != null) {
+					
+					term.setName(hmOfCodes.get(term.getCode())[1]);
+					Context.getConceptService().saveConceptReferenceTerm(term);
+				}
+				
+			}
+			
+		}
+		
 	}
 	
 	/**
@@ -339,14 +398,21 @@ public class ConceptManagementAppsServiceImpl extends BaseOpenmrsService impleme
 	}
 	
 	/**
-	 * Sets up the processors used for the spreadsheet to download.
+	 * Sets up the processors used for the snomed files.
 	 * 
 	 * @return the cell processors
 	 */
 	private static CellProcessor[] getSnomedFileProcessors() {
 		
-		final CellProcessor[] processors = new CellProcessor[] { new Optional(), // map type
-		        new Optional() // source name
+		final CellProcessor[] processors = new CellProcessor[] { new Optional(), // id
+		        new Optional(), // effectiveTime
+		        new Optional(), // active
+		        new Optional(), // moduleId
+		        new Optional(), // conceptId
+		        new Optional(), // languageCode
+		        new Optional(), // typeId
+		        new Optional(), // term
+		        new Optional() // caseSignificanceId
 		
 		};
 		
@@ -414,15 +480,12 @@ public class ConceptManagementAppsServiceImpl extends BaseOpenmrsService impleme
 		try {
 			ConceptService cs = Context.getConceptService();
 			
-			// load CSV File
 			mapReader = new CsvMapReader(new InputStreamReader(spreadsheetFile.getInputStream()),
 			        CsvPreference.STANDARD_PREFERENCE);
 			
-			// the header columns are used as the keys to the Map
 			final String[] header = mapReader.getHeader(true);
 			final CellProcessor[] processors = getSpreadsheetProcessors();
 			
-			// Prepare Map for mapping between content and header CSV
 			for (Map<String, Object> mapList = mapReader.read(header, processors); mapList != null; mapList = mapReader
 			        .read(header, processors)) {
 				

@@ -3,9 +3,15 @@
 <% 
     ui.decorateWith("appui", "standardEmrPage");
     ui.includeCss("uicommons", "emr/simpleFormUi.css", -200);
+    
+    ui.includeCss("uicommons", "../css/jquery-ui-1.9.2.custom.min.css");
+
             
     ui.includeJavascript("conceptmanagementapps", "jquery.dataTables.min.js");
     ui.includeJavascript("conceptmanagementapps", "fourButtonPagination.js");
+    ui.includeJavascript("conceptmanagementapps", "jquery.ui.core.js");
+    ui.includeJavascript("conceptmanagementapps", "jquery-ui-1.9.2.custom.min.js");
+    
     
     ui.includeCss("conceptmanagementapps", "../css/dataTables.css");
 
@@ -39,5 +45,4 @@ ${ ui.includeFragment("conceptmanagementapps", "browseTableOfReferenceTerms")}
 
  </div>
 </fieldset>
-
 

@@ -12,7 +12,13 @@ import org.openmrs.module.appui.UiSessionContext;
 import org.openmrs.ui.framework.UiUtils;
 import org.openmrs.ui.framework.page.PageModel;
 import org.openmrs.ui.framework.page.PageRequest;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 
+@Controller
 public class BrowseReferenceTermsTablePageController {
 	
 	protected final Log log = LogFactory.getLog(this.getClass());
@@ -21,10 +27,11 @@ public class BrowseReferenceTermsTablePageController {
 	                 PageRequest pageRequest) {
 	}
 	
-	public void controller(UiSessionContext sessionContext, PageModel model) throws Exception {
+	public void get(UiSessionContext sessionContext, PageModel model) throws Exception {
 		List<ConceptSource> sourceList = Context.getConceptService().getAllConceptSources();
 		model.addAttribute("sourceList", sourceList);
 		model.addAttribute("sourceId", 0);
 		
 	}
+
 }

@@ -22,6 +22,7 @@ import org.openmrs.ConceptReferenceTerm;
 import org.openmrs.ConceptSource;
 import org.openmrs.api.APIException;
 import org.openmrs.api.OpenmrsService;
+import org.openmrs.api.db.DAOException;
 import org.openmrs.ui.framework.page.FileDownload;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -48,14 +49,18 @@ public interface ConceptManagementAppsService extends OpenmrsService {
 	public FileDownload uploadSpreadsheet(MultipartFile spreadsheetFile) throws APIException;
 	
 	@Transactional
-	public void uploadSnomedFile(MultipartFile snomedFile) throws APIException;
+	public void readInSnomedFile(String snomedFile1) throws APIException;
 	
 	@Transactional(readOnly = true)
-	public List<ConceptReferenceTerm> getReferenceTermsForSpecifiedSource(ConceptSource specifiedSource, Integer startIndex,
-	                                                                      Integer numToReturn);
+	public List<ConceptReferenceTerm> getConceptReferenceTerms(ConceptSource specifiedSource, Integer startIndex,
+	                                                           Integer numToReturn, String sortColumn, int order)
+	    throws DAOException;
 	
 	@Transactional(readOnly = true)
-	public List<ConceptReferenceTerm> getReferenceTermsForAllSources(Integer startIndex, Integer numToReturn);
+	public List<ConceptReferenceTerm> getConceptReferenceTermsWithQuery(String query, ConceptSource conceptSource,
+	                                                                    Integer start, Integer length,
+	                                                                    boolean includeRetired, String sortColumn, int order)
+	    throws APIException;
 	
 	@Transactional(readOnly = true)
 	public ICsvMapWriter writeFileWithMissingConceptMappings(List<Concept> conceptList, PrintWriter spreadsheetWriter,

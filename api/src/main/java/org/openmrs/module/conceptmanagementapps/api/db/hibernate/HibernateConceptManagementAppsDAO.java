@@ -13,7 +13,10 @@
  */
 package org.openmrs.module.conceptmanagementapps.api.db.hibernate;
 
+import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -21,12 +24,15 @@ import org.hibernate.Criteria;
 import org.hibernate.Query;
 import org.hibernate.SessionFactory;
 import org.hibernate.criterion.Criterion;
+import org.hibernate.criterion.MatchMode;
+import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Restrictions;
 import org.hibernate.transform.DistinctRootEntityResultTransformer;
 import org.openmrs.Concept;
 import org.openmrs.ConceptClass;
 import org.openmrs.ConceptReferenceTerm;
 import org.openmrs.ConceptSource;
+import org.openmrs.api.APIException;
 import org.openmrs.api.db.DAOException;
 import org.openmrs.module.conceptmanagementapps.api.db.ConceptManagementAppsDAO;
 
@@ -62,7 +68,7 @@ public class HibernateConceptManagementAppsDAO implements ConceptManagementAppsD
 		List<Concept> allConceptsNotMappedToOurSource = conceptsWithOtherMappings;
 		allConceptsNotMappedToOurSource.addAll(conceptsWithNoMappings);
 		
-		return (List<Concept>) allConceptsNotMappedToOurSource;
+		return filterUnique((List<Concept>) allConceptsNotMappedToOurSource);
 		
 	}
 	
@@ -98,6 +104,21 @@ public class HibernateConceptManagementAppsDAO implements ConceptManagementAppsD
 		// we only want distinct concepts
 		criteria.setResultTransformer(DistinctRootEntityResultTransformer.INSTANCE);
 		return (List<Concept>) criteria.list();
+		
+	}
+	
+	private List<Concept> filterUnique(List<Concept> input) {
+		Set<Integer> already = new HashSet<Integer>();
+		List<Concept> unique = new ArrayList<Concept>();
+		for (Concept candidate : input) {
+			if (already.contains(candidate.getId())) {
+				continue;
+			} else {
+				already.add(candidate.getId());
+				unique.add(candidate);
+			}
+		}
+		return unique;
 	}
 	
 	@SuppressWarnings("unchecked")
@@ -134,43 +155,71 @@ public class HibernateConceptManagementAppsDAO implements ConceptManagementAppsD
 	 * @see org.openmrs.module.conceptmanagementapps.api.db.ConceptManagementAppsDAO#getConceptReferenceTermsBySource(ConceptSource)
 	 */
 	@SuppressWarnings("unchecked")
-	@Override
-	public List<ConceptReferenceTerm> getReferenceTermsForSpecifiedSource(ConceptSource specifiedSource, Integer startIndex,
-	                                                                      Integer numToReturn) throws DAOException {
+	public List<ConceptReferenceTerm> getConceptReferenceTerms(ConceptSource specifiedSource, Integer startIndex,
+	                                                           Integer numToReturn, String sortColumn, int order)
+	    throws DAOException {
 		
 		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(ConceptReferenceTerm.class);
-		criteria.add(Restrictions.eq("conceptSource", specifiedSource));
+		if (specifiedSource != null) {
+			criteria.add(Restrictions.eq("conceptSource", specifiedSource));
+		}
 		
+		if (order == 1)
+			criteria.addOrder(Order.desc(sortColumn));
+		if (order == -1)
+			criteria.addOrder(Order.asc(sortColumn));
 		if (startIndex != null)
 			criteria.setFirstResult(startIndex);
 		if (numToReturn != null && numToReturn > 0) {
 			criteria.setMaxResults(numToReturn);
 		} else {
-			criteria.setMaxResults(1000);
+			if (numToReturn != -1) {
+				criteria.setMaxResults(1000);
+			}
 		}
+		
+		criteria.add(Restrictions.eq("retired", false));
 		
 		return (List<ConceptReferenceTerm>) criteria.list();
 	}
 	
 	/**
-	 * @see org.openmrs.module.conceptmanagementapps.api.db.ConceptManagementAppsDAO#getReferenceTermsForAllSources(int
-	 *      startIndex, int numToReturn)
+	 * @see org.openmrs.api.db.ConceptDAO#getConceptReferenceTerms(String, ConceptSource, Integer,
+	 *      Integer, boolean)
 	 */
 	@SuppressWarnings("unchecked")
-	@Override
-	public List<ConceptReferenceTerm> getReferenceTermsForAllSources(Integer startIndex, Integer numToReturn)
-	    throws DAOException {
+	public List<ConceptReferenceTerm> getConceptReferenceTermsWithQuery(String query, ConceptSource conceptSource,
+	                                                                    Integer start, Integer length,
+	                                                                    boolean includeRetired, String sortColumn, int order)
+	    throws APIException {
+		Criteria criteria = createConceptReferenceTermCriteria(query, conceptSource, includeRetired);
 		
-		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(ConceptReferenceTerm.class);
+		if (order == 1)
+			criteria.addOrder(Order.desc(sortColumn));
+		if (order == -1)
+			criteria.addOrder(Order.asc(sortColumn));
+		if (start != null)
+			criteria.setFirstResult(start);
+		if (length != null && length > 0)
+			criteria.setMaxResults(length);
+		return criteria.list();
+	}
+	
+	/**
+	 * @param query
+	 * @param includeRetired
+	 * @return
+	 */
+	private Criteria createConceptReferenceTermCriteria(String query, ConceptSource conceptSource, boolean includeRetired) {
+		Criteria searchCriteria = sessionFactory.getCurrentSession().createCriteria(ConceptReferenceTerm.class);
 		
-		if (startIndex != null)
-			criteria.setFirstResult(startIndex);
-		if (numToReturn != null && numToReturn > 0) {
-			criteria.setMaxResults(numToReturn);
-		} else {
-			criteria.setMaxResults(1000);
-		}
-		
-		return (List<ConceptReferenceTerm>) criteria.list();
+		if (conceptSource != null)
+			searchCriteria.add(Restrictions.eq("conceptSource", conceptSource));
+		if (!includeRetired)
+			searchCriteria.add(Restrictions.eq("retired", false));
+		if (query != null)
+			searchCriteria.add(Restrictions.or(Restrictions.ilike("name", query, MatchMode.ANYWHERE),
+			    Restrictions.ilike("code", query, MatchMode.ANYWHERE)));
+		return searchCriteria;
 	}
 }

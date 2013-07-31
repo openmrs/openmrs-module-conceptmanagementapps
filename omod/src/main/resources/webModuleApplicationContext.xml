@@ -9,5 +9,10 @@ http://www.springframework.org/schema/beans/spring-beans-3.0.xsd">
     <bean class="org.openmrs.ui.framework.StandardModuleUiConfiguration">
         <property name="moduleId" value="${project.parent.artifactId}"/>
     </bean>
+    <bean id="multipartResolver" class="org.springframework.web.multipart.commons.CommonsMultipartResolver">    
+   <!--  the maximum size of an uploaded file in bytes -->
+   <!-- <property name="maxUploadSize" value="10000000"/> -->
+   <property name="maxUploadSize" value="1999999999"/>
+   </bean>
 
 </beans>

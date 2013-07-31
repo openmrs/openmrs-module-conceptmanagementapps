@@ -16,24 +16,26 @@ package org.openmrs.module.conceptmanagementapps.api;
 import static org.junit.Assert.assertNotNull;
 import static org.mockito.Mockito.mock;
 
+import java.io.File;
 import java.io.PrintWriter;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
-import org.mockito.Mock;
 import org.openmrs.Concept;
 import org.openmrs.ConceptClass;
+import org.openmrs.ConceptReferenceTerm;
 import org.openmrs.ConceptSource;
 import org.openmrs.api.ConceptService;
 import org.openmrs.api.context.Context;
 import org.openmrs.test.BaseContextSensitiveTest;
 import org.openmrs.test.BaseModuleContextSensitiveTest;
-import org.openmrs.ui.framework.UiUtils;
-import org.powermock.api.mockito.PowerMockito;
 import org.springframework.mock.web.MockMultipartFile;
+import org.junit.rules.ExternalResource;
 
 /**
  * Tests {@link $ ConceptManagementAppsService} .
@@ -41,8 +43,6 @@ import org.springframework.mock.web.MockMultipartFile;
 public class ConceptManagementAppsServiceTest extends BaseModuleContextSensitiveTest {
 	
 	protected ConceptManagementAppsService conceptManagementAppsService = null;
-	
-	
 	
 	/**
 	 * Run this before each unit test in this class. The "@Before" method in
@@ -73,7 +73,30 @@ public class ConceptManagementAppsServiceTest extends BaseModuleContextSensitive
 		conceptManagementAppsService = (ConceptManagementAppsService) Context.getService(ConceptManagementAppsService.class);
 		List<Concept> conceptList = conceptManagementAppsService.getUnmappedConcepts(new ConceptSource(sourceId),
 		    classesToInclude);
-		Assert.assertEquals(9, conceptList.size());
+		
+		Assert.assertEquals(7, conceptList.size());
+	}
+	
+	@Test
+	public void getConceptReferenceTerms_getsCorrectNumberOfRows() throws Exception {
+		executeDataSet("concepts.xml");
+		conceptManagementAppsService = (ConceptManagementAppsService) Context.getService(ConceptManagementAppsService.class);
+		List<ConceptReferenceTerm> refTermList = conceptManagementAppsService.getConceptReferenceTerms(null, 0, 5,
+		    "conceptSource", 1);
+		
+		Assert.assertEquals(5, refTermList.size());
+	}
+	
+	@Test
+	public void getConceptReferenceTermsWithQuery_getsCorrectNumberOfRows() throws Exception {
+		executeDataSet("concepts.xml");
+		ConceptService cs = Context.getConceptService();
+		Integer sourceId = 6;
+		
+		conceptManagementAppsService = (ConceptManagementAppsService) Context.getService(ConceptManagementAppsService.class);
+		List<ConceptReferenceTerm> refTermList = conceptManagementAppsService.getConceptReferenceTermsWithQuery("1",
+		    cs.getConceptSource(sourceId), 0, 2, false, "code", 1);
+		Assert.assertEquals(2, refTermList.size());
 	}
 	
 	@Test
@@ -95,16 +118,8 @@ public class ConceptManagementAppsServiceTest extends BaseModuleContextSensitive
 	public void uploadSnomedFile_shouldPassWithoutErrors() throws Exception {
 		conceptManagementAppsService = (ConceptManagementAppsService) Context.getService(ConceptManagementAppsService.class);
 		executeDataSet("concepts.xml");
-		final String fileName = "test.csv";
-		String line = "map type	source name \n";
-		line += "same-as	SNOMED CT \n";
-		line += "same-as	SNOMED CT \n";
-		line += "same-as	SNOMED CT \n";
-		
-		final byte[] content = line.getBytes();
-		MockMultipartFile mockMultipartFile = new MockMultipartFile("content", fileName, "text/plain", content);
-		conceptManagementAppsService.uploadSnomedFile(mockMultipartFile);
-		
+		URL url = this.getClass().getResource("/sct2_Description_Full-en_INT_20130131.csv");
+		conceptManagementAppsService.readInSnomedFile(url.getPath());
 	}
 	
 	@Test
