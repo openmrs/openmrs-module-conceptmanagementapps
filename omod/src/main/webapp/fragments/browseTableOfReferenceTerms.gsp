@@ -19,14 +19,7 @@
     }
     return sourceId;
  }
- function getNumResultsToRetrieve() {
-    var numResults=document.getElementById('numResults').value;
-    if(numResults.length<1){
-        document.getElementById("numResults").value=200;
-    	numResults=200;
-    }
-    return numResults;
- }       
+       
  
 </script>
 
@@ -49,7 +42,6 @@ jQuery('[name=sourceList]').change(function () {
         	],
         "fnServerParams": function ( aoData ) {
       		aoData.push({ "name": "sourceId", "value": getSourceId()});
-      		aoData.push({ "name": "numResultsToRetrieve", "value": getNumResultsToRetrieve()});
     		},
 		"fnServerData": function ( sSource, aoData, fnCallback ) {
 			jQuery.getJSON( sSource, aoData, function (json) {
@@ -60,34 +52,7 @@ jQuery('[name=sourceList]').change(function () {
          }
 	});        
 });   		   
-jQuery('#updateRowNum').click(function () {
-	var actionUrl='${ ui.actionLink("conceptmanagementapps", "browseTableOfReferenceTerms", "retrieveTableData") }';
-	jQuery('#demo').html( '<table cellpadding="0" cellspacing="0" border="0" class="display" id="example"></table>' );
-    jQuery('#example').dataTable( {
-    	"iDisplayLength": 25,
-    	"bProcessing": true,
-       	"bServerSide": true,
-    	"sPaginationType": "four_button",
-    	"sAjaxSource": actionUrl,
-    	"aoColumns": [
-        	{ "sTitle": "source"},
-            { "sTitle": "code" },
-            { "sTitle": "name" },
-           	{ "sTitle": "description"}
-        	],
-        "fnServerParams": function ( aoData ) {
-      		aoData.push({ "name": "sourceId", "value": getSourceId()});
-      		aoData.push({ "name": "numResultsToRetrieve", "value": getNumResultsToRetrieve()});
-    		},
-		"fnServerData": function ( sSource, aoData, fnCallback ) {
-			jQuery.getJSON( sSource, aoData, function (json) {
-            	var parsedJSON = jQuery.parseJSON(json);
-            	fnCallback(parsedJSON)
-                		
-            });
-         }
-    });           
-});
+
 }); 
 </script>
 <script type="text/javascript">
@@ -110,7 +75,6 @@ jQuery(function() {
 
         "fnServerParams": function ( aoData ) {
       		aoData.push({ "name": "sourceId", "value": getSourceId()});
-      		aoData.push({ "name": "numResultsToRetrieve", "value": getNumResultsToRetrieve()});
     		},
 		"fnServerData": function ( sSource, aoData, fnCallback ) {
 			jQuery.getJSON( sSource, aoData, function (json) {
@@ -123,12 +87,7 @@ jQuery(function() {
 	});  
 });
 </script>
-<fieldset> 
-<p>
-<label>Max Number Of Results To Return:</label><input type="text" id="numResults" size="4" value="200"/>
-</p>
-<input type="button" id="updateRowNum" value="Reload"/>
-</fieldset> 
+
 <fieldset>        
 	${ ui.includeFragment("uicommons", "field/dropDown", [
 		label: ui.message("conceptmanagementapps.browsereferenceterms.select.source.label"),

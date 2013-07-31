@@ -23,7 +23,6 @@ public class BrowseTableOfReferenceTermsFragmentController {
 	                                @RequestParam(value = "sourceId", required = false) Integer sourceId,
 	                                @RequestParam(value = "sEcho", required = false) int sEcho,
 	                                @RequestParam(value = "sSearch", required = false) String sSearch,
-	                                @RequestParam(value = "numResultsToRetrieve", required = false) Integer numResultsToRetrieve,
 	                                @RequestParam(value = "iDisplayLength", required = false) Integer iDisplayLength,
 	                                @RequestParam(value = "iDisplayStart", required = false) Integer iDisplayStart,
 	                                @RequestParam(value = "iTotal", required = false) Integer iTotal) throws Exception {
@@ -58,14 +57,14 @@ public class BrowseTableOfReferenceTermsFragmentController {
 			sortDirection = sSortDirection.equals("asc") ? -1 : 1;
 		}
 		
-		Integer totalRefTerms;
-		Integer numOfRefTermsToRetrieve = numResultsToRetrieve;
+		Integer iTotalRecords = 0;
+		Integer numOfRefTermsToRetrieve = iDisplayLength;
 		Integer startIndex = iDisplayStart;
 		List<ConceptReferenceTerm> referenceTermList;
 		
 		ConceptService conceptService = (ConceptService) Context.getService(ConceptService.class);
 		ConceptManagementAppsService conceptManagementAppsService = (ConceptManagementAppsService) Context
-		        .getService(ConceptManagementAppsService.class);
+		        .getService(ConceptManagementAppsService.class); 
 		
 		ConceptSource specifiedSource = null;
 		if (conceptService.getConceptSource(sourceId) != null) {
@@ -73,40 +72,34 @@ public class BrowseTableOfReferenceTermsFragmentController {
 		}
 		
 		if (StringUtils.isNotEmpty(sSearch) && StringUtils.isNotBlank(sSearch)) {
-			if (sourceId == 0) {
+			if (sourceId == 0) { 
+				
+				iTotalRecords = conceptManagementAppsService.getCountOfConceptReferenceTermsWithQuery(sSearch, null, false);
 				referenceTermList = conceptManagementAppsService.getConceptReferenceTermsWithQuery(sSearch, null,
 				    startIndex, numOfRefTermsToRetrieve, false, sortColumn, sortDirection);
-				totalRefTerms = conceptManagementAppsService.getConceptReferenceTermsWithQuery(sSearch, null, 0,
-				    numOfRefTermsToRetrieve, false, sortColumn, sortDirection).size();
 				
 			} else {
+				iTotalRecords = conceptManagementAppsService.getCountOfConceptReferenceTermsWithQuery(sSearch, Context
+				        .getConceptService().getConceptSource(sourceId), false);
 				referenceTermList = conceptManagementAppsService.getConceptReferenceTermsWithQuery(sSearch, Context
 				        .getConceptService().getConceptSource(sourceId), startIndex, numOfRefTermsToRetrieve, false,
 				    sortColumn, sortDirection);
-				totalRefTerms = conceptManagementAppsService.getConceptReferenceTermsWithQuery(sSearch,
-				    Context.getConceptService().getConceptSource(sourceId), 0, numOfRefTermsToRetrieve, false, sortColumn,
-				    sortDirection).size();
 			}
 			
 		} else {
+			
 			if (sourceId == 0) {
-				referenceTermList = conceptManagementAppsService.getConceptReferenceTerms(null, Integer.valueOf(startIndex),
-				    Integer.valueOf(numOfRefTermsToRetrieve), sortColumn, sortDirection);
-				totalRefTerms = conceptManagementAppsService.getConceptReferenceTerms(specifiedSource, 0,
-				    Integer.valueOf(numOfRefTermsToRetrieve), sortColumn, sortDirection).size();
+				iTotalRecords = conceptManagementAppsService.getCountOfConceptReferenceTerms(null);
+				referenceTermList = conceptManagementAppsService.getConceptReferenceTerms(null, startIndex,
+				    numOfRefTermsToRetrieve, sortColumn, sortDirection);
 				
 			} else {
-				referenceTermList = conceptManagementAppsService.getConceptReferenceTerms(specifiedSource,
-				    Integer.valueOf(startIndex), Integer.valueOf(numOfRefTermsToRetrieve), sortColumn, sortDirection);
-				totalRefTerms = conceptManagementAppsService.getConceptReferenceTerms(specifiedSource, 0,
-				    Integer.valueOf(numOfRefTermsToRetrieve), sortColumn, sortDirection).size();
+				iTotalRecords = conceptManagementAppsService.getCountOfConceptReferenceTerms(specifiedSource);
+				referenceTermList = conceptManagementAppsService.getConceptReferenceTerms(specifiedSource, startIndex,
+				    numOfRefTermsToRetrieve, sortColumn, sortDirection);
 				
 			}
-		}
-		
-		if (totalRefTerms > numOfRefTermsToRetrieve) {
 			
-			totalRefTerms = numOfRefTermsToRetrieve;
 		}
 		
 		if (referenceTermList.size() < iDisplayLength) {
@@ -118,8 +111,8 @@ public class BrowseTableOfReferenceTermsFragmentController {
 			referenceTermList = referenceTermList.subList(0, iDisplayLength);
 		}
 		
-		String startDataString = "{  \"sEcho\": " + sEcho + " ," + "   \"iTotalRecords\": " + totalRefTerms + ","
-		        + "   \"iTotalDisplayRecords\": " + totalRefTerms + "," + "   \"aaData\": [";
+		String startDataString = "{  \"sEcho\": " + sEcho + " ," + "   \"iTotalRecords\": " + iTotalRecords + ","
+		        + "   \"iTotalDisplayRecords\": " + iTotalRecords + "," + "   \"aaData\": [";
 		
 		String endDataString = "   ]" + "}";
 		

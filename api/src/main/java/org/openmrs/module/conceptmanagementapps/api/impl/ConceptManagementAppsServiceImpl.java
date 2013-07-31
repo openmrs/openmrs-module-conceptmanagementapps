@@ -47,7 +47,6 @@ import org.openmrs.module.conceptmanagementapps.api.db.ConceptManagementAppsDAO;
 import org.openmrs.ui.framework.page.FileDownload;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
-import org.springframework.web.multipart.commons.CommonsMultipartResolver;
 import org.supercsv.cellprocessor.Optional;
 import org.supercsv.cellprocessor.ift.CellProcessor;
 import org.supercsv.io.CsvMapReader;
@@ -96,13 +95,27 @@ public class ConceptManagementAppsServiceImpl extends BaseOpenmrsService impleme
 	}
 	
 	@Transactional(readOnly = true)
+	public Integer getCountOfConceptReferenceTerms(ConceptSource specifiedSource) throws DAOException {
+		
+		return this.dao.getCountOfConceptReferenceTerms(specifiedSource);
+	}
+	
+	@Transactional(readOnly = true)
 	public List<ConceptReferenceTerm> getConceptReferenceTermsWithQuery(String query, ConceptSource conceptSource,
 	                                                                    Integer start, Integer length,
 	                                                                    boolean includeRetired, String sortColumn, int order)
-	    throws APIException {
+	    throws DAOException {
 		
 		return this.dao.getConceptReferenceTermsWithQuery(query, conceptSource, start, length, includeRetired, sortColumn,
 		    order);
+	}
+	
+	@Transactional(readOnly = true)
+	public Integer getCountOfConceptReferenceTermsWithQuery(String query, ConceptSource conceptSource, boolean includeRetired)
+	    throws DAOException {
+		
+		return this.dao.getCountOfConceptReferenceTermsWithQuery(query, conceptSource, includeRetired);
+		
 	}
 	
 	@Transactional

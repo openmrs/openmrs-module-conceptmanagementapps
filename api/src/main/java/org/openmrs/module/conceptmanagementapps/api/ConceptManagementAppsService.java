@@ -54,7 +54,10 @@ public interface ConceptManagementAppsService extends OpenmrsService {
 	@Transactional(readOnly = true)
 	public List<ConceptReferenceTerm> getConceptReferenceTerms(ConceptSource specifiedSource, Integer startIndex,
 	                                                           Integer numToReturn, String sortColumn, int order)
-	    throws DAOException;
+	    throws APIException;
+	
+	@Transactional(readOnly = true)
+	public Integer getCountOfConceptReferenceTerms(ConceptSource specifiedSource) throws APIException;
 	
 	@Transactional(readOnly = true)
 	public List<ConceptReferenceTerm> getConceptReferenceTermsWithQuery(String query, ConceptSource conceptSource,
@@ -66,5 +69,9 @@ public interface ConceptManagementAppsService extends OpenmrsService {
 	public ICsvMapWriter writeFileWithMissingConceptMappings(List<Concept> conceptList, PrintWriter spreadsheetWriter,
 	                                                         String mapTypeForDefaultValue, String conceptSourceName)
 	    throws Exception;
+	
+	@Transactional(readOnly = true)
+	public Integer getCountOfConceptReferenceTermsWithQuery(String query, ConceptSource conceptSource, boolean includeRetired)
+	    throws APIException;
 	
 }

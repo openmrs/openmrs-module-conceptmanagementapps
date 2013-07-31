@@ -19,7 +19,6 @@ import org.openmrs.Concept;
 import org.openmrs.ConceptClass;
 import org.openmrs.ConceptReferenceTerm;
 import org.openmrs.ConceptSource;
-import org.openmrs.api.APIException;
 import org.openmrs.api.db.DAOException;
 import org.openmrs.module.conceptmanagementapps.api.ConceptManagementAppsService;
 
@@ -34,9 +33,14 @@ public interface ConceptManagementAppsDAO {
 	                                                           Integer numToReturn, String sortColumn, int order)
 	    throws DAOException;
 	
+	public Integer getCountOfConceptReferenceTerms(ConceptSource specifiedSource) throws DAOException;
+	
 	public List<ConceptReferenceTerm> getConceptReferenceTermsWithQuery(String query, ConceptSource conceptSource,
 	                                                                    Integer start, Integer length,
 	                                                                    boolean includeRetired, String sortColumn, int order)
-	    throws APIException;
+	    throws DAOException;
+	
+	public Integer getCountOfConceptReferenceTermsWithQuery(String query, ConceptSource conceptSource, boolean includeRetired)
+	    throws DAOException;
 	
 }

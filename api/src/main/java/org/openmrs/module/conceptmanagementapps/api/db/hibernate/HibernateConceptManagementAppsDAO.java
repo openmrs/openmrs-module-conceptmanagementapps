@@ -26,6 +26,7 @@ import org.hibernate.SessionFactory;
 import org.hibernate.criterion.Criterion;
 import org.hibernate.criterion.MatchMode;
 import org.hibernate.criterion.Order;
+import org.hibernate.criterion.Projections;
 import org.hibernate.criterion.Restrictions;
 import org.hibernate.transform.DistinctRootEntityResultTransformer;
 import org.openmrs.Concept;
@@ -183,6 +184,20 @@ public class HibernateConceptManagementAppsDAO implements ConceptManagementAppsD
 		return (List<ConceptReferenceTerm>) criteria.list();
 	}
 	
+	public Integer getCountOfConceptReferenceTerms(ConceptSource specifiedSource) throws DAOException {
+		
+		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(ConceptReferenceTerm.class);
+		
+		if (specifiedSource != null)
+			criteria.add(Restrictions.eq("conceptSource", specifiedSource));
+		criteria.add(Restrictions.eq("retired", false));
+		
+		criteria.setProjection(Projections.rowCount());
+		Integer count = ((Number) criteria.uniqueResult()).intValue();
+		
+		return count;
+	}
+	
 	/**
 	 * @see org.openmrs.api.db.ConceptDAO#getConceptReferenceTerms(String, ConceptSource, Integer,
 	 *      Integer, boolean)
@@ -220,6 +235,19 @@ public class HibernateConceptManagementAppsDAO implements ConceptManagementAppsD
 		if (query != null)
 			searchCriteria.add(Restrictions.or(Restrictions.ilike("name", query, MatchMode.ANYWHERE),
 			    Restrictions.ilike("code", query, MatchMode.ANYWHERE)));
+		
 		return searchCriteria;
+	}
+	
+	public Integer getCountOfConceptReferenceTermsWithQuery(String query, ConceptSource conceptSource, boolean includeRetired)
+	    throws APIException {
+		
+		Criteria criteria = createConceptReferenceTermCriteria(query, conceptSource, includeRetired);
+		
+		criteria.setProjection(Projections.rowCount());
+		Integer count = ((Number) criteria.uniqueResult()).intValue();
+		
+		return count;
+		
 	}
 }
