@@ -16,15 +16,13 @@ package org.openmrs.module.conceptmanagementapps.api;
 import static org.junit.Assert.assertNotNull;
 import static org.mockito.Mockito.mock;
 
-import java.io.File;
 import java.io.PrintWriter;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 import org.junit.Assert;
 import org.junit.Before;
-import org.junit.Rule;
 import org.junit.Test;
 import org.openmrs.Concept;
 import org.openmrs.ConceptClass;
@@ -35,7 +33,6 @@ import org.openmrs.api.context.Context;
 import org.openmrs.test.BaseContextSensitiveTest;
 import org.openmrs.test.BaseModuleContextSensitiveTest;
 import org.springframework.mock.web.MockMultipartFile;
-import org.junit.rules.ExternalResource;
 
 /**
  * Tests {@link $ ConceptManagementAppsService} .
@@ -61,6 +58,29 @@ public class ConceptManagementAppsServiceTest extends BaseModuleContextSensitive
 	}
 	
 	@Test
+	public void getConceptsParentReferenceTerms_returnsConceptsParentReferenceTerms() throws Exception {
+		executeDataSet("concepts.xml");
+		ConceptService cs = Context.getConceptService();
+		
+		Set<ConceptReferenceTerm> refTermList = conceptManagementAppsService.getConceptsParentReferenceTerms(cs
+		        .getConcept(225));
+		
+		Assert.assertEquals(0, refTermList.size());
+	}
+	
+	@Test
+	public void getRefTermParentReferenceTerms_returnsRefTermParentReferenceTerms() throws Exception {
+		executeDataSet("concepts.xml");
+		ConceptService cs = Context.getConceptService();
+		
+		Set<ConceptReferenceTerm> refTermList = conceptManagementAppsService.getRefTermParentReferenceTerms(cs
+		        .getConceptReferenceTerm(30));
+		
+		Assert.assertEquals(1, refTermList.size());
+		
+	}
+	
+	@Test
 	public void getUnmappedConcepts_getsCorrectNumberOfRows() throws Exception {
 		executeDataSet("concepts.xml");
 		ConceptService cs = Context.getConceptService();
@@ -74,15 +94,15 @@ public class ConceptManagementAppsServiceTest extends BaseModuleContextSensitive
 		List<Concept> conceptList = conceptManagementAppsService.getUnmappedConcepts(new ConceptSource(sourceId),
 		    classesToInclude);
 		
-		Assert.assertEquals(7, conceptList.size());
+		Assert.assertEquals(6, conceptList.size());
 	}
 	
 	@Test
 	public void getConceptReferenceTerms_getsCorrectNumberOfRows() throws Exception {
 		executeDataSet("concepts.xml");
 		conceptManagementAppsService = (ConceptManagementAppsService) Context.getService(ConceptManagementAppsService.class);
-		List<ConceptReferenceTerm> refTermList = conceptManagementAppsService.getConceptReferenceTerms(null, 0, 5,
-		    "conceptSource", 1);
+		List<ConceptReferenceTerm> refTermList = conceptManagementAppsService
+		        .getConceptReferenceTermsWithSpecifiedSourceIfIncluded(null, 0, 5, "conceptSource", 1);
 		
 		Assert.assertEquals(5, refTermList.size());
 	}
@@ -102,7 +122,6 @@ public class ConceptManagementAppsServiceTest extends BaseModuleContextSensitive
 	@Test
 	public void uploadSpreadsheet_shouldPassWithoutErrors() throws Exception {
 		conceptManagementAppsService = (ConceptManagementAppsService) Context.getService(ConceptManagementAppsService.class);
-		executeDataSet("concepts.xml");
 		final String fileName = "test.csv";
 		String line = "\"map type\",\"source name\",\"source code\",\"concept Id\",\"concept uuid\",\"preferred name\",\"description\",\"class\",\"datatype\",\"all existing mappings\"\n";
 		line += "\"same-as\",\"\",12345,225,\"432AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA\",\"MEDICAL EXAMINATION, ROUTINE\",\"Routine examination, without signs of problems.\",\"Procedure\",\"Boolean\",\"SAME-AS AMPATH \n SAME-AS SNOMED MVP\n SAME-AS PIH \n SAME-AS AMPATH \n NARROWER-THAN SNOMED NP\"\n";
@@ -112,14 +131,6 @@ public class ConceptManagementAppsServiceTest extends BaseModuleContextSensitive
 		MockMultipartFile mockMultipartFile = new MockMultipartFile("content", fileName, "text/plain", content);
 		conceptManagementAppsService.uploadSpreadsheet(mockMultipartFile);
 		
-	}
-	
-	@Test
-	public void uploadSnomedFile_shouldPassWithoutErrors() throws Exception {
-		conceptManagementAppsService = (ConceptManagementAppsService) Context.getService(ConceptManagementAppsService.class);
-		executeDataSet("concepts.xml");
-		URL url = this.getClass().getResource("/sct2_Description_Full-en_INT_20130131.csv");
-		conceptManagementAppsService.readInSnomedFile(url.getPath());
 	}
 	
 	@Test

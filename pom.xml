@@ -1,10 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 
 	<groupId>org.openmrs.module</groupId>
 	<artifactId>conceptmanagementapps</artifactId>
-	<version>1.1-SNAPSHOT</version>
+	<version>1.0-SNAPSHOT</version>
 	<packaging>pom</packaging>
 	<name>Concept Management Apps Module</name>
 	<description>Practical tools to help OpenMRS administrators perform common tasks and batch operations that are not supported in the existing user interface</description>
@@ -20,13 +21,12 @@
 		<name>OpenMRS</name>
 		<url>http://openmrs.org</url>
 	</organization>
-	
+
 	<scm>
-    <connection>scm:git:git@github.com:openmrs/openmrs-module-conceptmanagementapps.git</connection>
-    <developerConnection>scm:git:git@github.com:openmrs/openmrs-module-conceptmanagementapps.git</developerConnection>
-    <url>scm:git:git@github.com:openmrs/openmrs-module-conceptmanagementapps.git</url>
-	  <tag>HEAD</tag>
-  </scm>
+		<connection>scm:git:git@github.com:openmrs/openmrs-module-conceptmanagementapps.git</connection>
+		<developerConnection>scm:git:git@github.com:openmrs/openmrs-module-conceptmanagementapps.git</developerConnection>
+		<url>scm:git:git@github.com:openmrs/openmrs-module-conceptmanagementapps.git</url>
+	</scm>
 
 	<modules>
 		<module>api</module>
@@ -34,20 +34,18 @@
 	</modules>
 
 	<properties>
-		<openMRSVersion>1.9.3</openMRSVersion>
+		<openMRSVersion>1.9.4-SNAPSHOT</openMRSVersion>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<appframeworkVersion>2.0-SNAPSHOT</appframeworkVersion>
-		<springVersion>3.0.5.RELEASE</springVersion>
-		<idgenVersion>2.5</idgenVersion>
-		<uicommonsVersion>1.0-SNAPSHOT</uicommonsVersion>
-		<uiframeworkVersion>2.0</uiframeworkVersion>
-		<emrapiVersion>1.0-SNAPSHOT</emrapiVersion>
-		<calculationVersion>1.0</calculationVersion>
-		<paperrecordVersion>1.0-SNAPSHOT</paperrecordVersion>
-		<providerManagementVersion>1.1.3</providerManagementVersion>
-		<registrationcoreVersion>1.0-SNAPSHOT</registrationcoreVersion>
-		<appuiVersion>1.0-SNAPSHOT</appuiVersion>
-		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <uiframeworkVersion>2.5.2</uiframeworkVersion>
+        <emrapiVersion>1.0-SNAPSHOT</emrapiVersion>
+        <appuiVersion>1.0-SNAPSHOT</appuiVersion>
+        <idgenVersion>2.6</idgenVersion>
+        <addresshierarchyVersion>2.2.9</addresshierarchyVersion>
+        <webservicesRestVersion>2.1</webservicesRestVersion>
+        <uicommonsVersion>1.0-SNAPSHOT</uicommonsVersion>
+        <htmlformentryVersion>2.1.5</htmlformentryVersion>
+		<providermanagementModuleVersion>1.1.3</providermanagementModuleVersion>
 	</properties>
 
 	<dependencyManagement>
@@ -92,6 +90,13 @@
 				<version>${openMRSVersion}</version>
 				<type>test-jar</type>
 				<scope>test</scope>
+			</dependency>
+
+			<dependency>
+				<groupId>org.openmrs.module</groupId>
+				<artifactId>providermanagement-api</artifactId>
+				<version>${providermanagementModuleVersion}</version>
+				<scope>provided</scope>
 			</dependency>
 
 			<dependency>
@@ -169,14 +174,14 @@
 					<version>2.4</version>
 				</plugin>
 				<plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-release-plugin</artifactId>
-                <version>2.3.2</version>
-                <configuration>
-                    <autoVersionSubmodules>true</autoVersionSubmodules>
-                    <tagNameFormat>@{project.version}</tagNameFormat>
-                </configuration>
-            </plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-release-plugin</artifactId>
+					<version>2.3.2</version>
+					<configuration>
+						<autoVersionSubmodules>true</autoVersionSubmodules>
+						<tagNameFormat>@{project.version}</tagNameFormat>
+					</configuration>
+				</plugin>
 			</plugins>
 		</pluginManagement>
 	</build>
@@ -200,16 +205,16 @@
 		</pluginRepository>
 	</pluginRepositories>
 	<distributionManagement>
-    <repository>
-        <id>openmrs-repo-modules</id>
-        <name>Modules</name>
-        <url>http://mavenrepo.openmrs.org/nexus/content/repositories/modules/</url>
-    </repository>
-    <snapshotRepository>
-        <id>openmrs-repo-snapshots</id>
-        <name>OpenMRS Snapshots</name>
-        <url>http://mavenrepo.openmrs.org/nexus/content/repositories/snapshots</url>
-    </snapshotRepository>
-</distributionManagement>
+		<repository>
+			<id>openmrs-repo-modules</id>
+			<name>Modules</name>
+			<url>http://mavenrepo.openmrs.org/nexus/content/repositories/modules/</url>
+		</repository>
+		<snapshotRepository>
+			<id>openmrs-repo-snapshots</id>
+			<name>OpenMRS Snapshots</name>
+			<url>http://mavenrepo.openmrs.org/nexus/content/repositories/snapshots</url>
+		</snapshotRepository>
+	</distributionManagement>
 
 </project>
