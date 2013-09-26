@@ -505,8 +505,7 @@ public class ConceptManagementAppsServiceImpl extends BaseOpenmrsService impleme
 					conceptsMissingMappings.put(header[5], concept.getPreferredName(locale));
 				} else if (concept.getName() != null) {
 					conceptsMissingMappings.put(header[5], concept.getName());
-				}
-				else {
+				} else {
 					conceptsMissingMappings.put(header[5], " ");
 				}
 				
@@ -526,7 +525,8 @@ public class ConceptManagementAppsServiceImpl extends BaseOpenmrsService impleme
 						mappingsName += cm.getConceptMapType().getName() + " ";
 					}
 					if (cm.getConceptReferenceTerm() != null && cm.getConceptReferenceTerm().getConceptSource() != null) {
-						mappingsName += cm.getConceptReferenceTerm().getConceptSource().getName() + " "+cm.getConceptReferenceTerm().getCode() + "\n";
+						mappingsName += cm.getConceptReferenceTerm().getConceptSource().getName() + " "
+						        + cm.getConceptReferenceTerm().getCode() + "\n";
 					}
 				}
 				

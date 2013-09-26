@@ -94,7 +94,7 @@ public class ChooseConceptByHierarchyFragmentController {
 		
 		//there are no mappings so we need to send it through blank and let the user know
 		if (StringUtils.isEmpty(id) || StringUtils.isBlank(id) || id.contains("empty")) {
-
+			
 			id = "0";
 			Set<ConceptReferenceTerm> parentTerms = new HashSet<ConceptReferenceTerm>();
 			Set<ConceptReferenceTerm> childTerms = new HashSet<ConceptReferenceTerm>();
@@ -120,9 +120,29 @@ public class ChooseConceptByHierarchyFragmentController {
 			
 			Gson gson = new Gson();
 			
+			Set<ConceptReferenceTerm> currentTerm = new HashSet<ConceptReferenceTerm>();
+			
 			ConceptReferenceTerm currentRefTerm = conceptService.getConceptReferenceTerm(Integer.parseInt(id));
+			currentTerm.add(currentRefTerm);
+			
+			HashMap<ConceptReferenceTerm, List<Concept>> currentTermMappings = getAssociatedConceptsToRefTerms(currentTerm);
 			HashMap<ConceptReferenceTerm, List<Concept>> parentMappings = getAssociatedConceptsToRefTerms(parentTerms);
 			HashMap<ConceptReferenceTerm, List<Concept>> childMappings = getAssociatedConceptsToRefTerms(childTerms);
+			
+			List<String> theTerm = new ArrayList<String>();
+			for (ConceptReferenceTerm term : currentTerm) {
+				
+				List<Concept> mappedConcepts = currentTermMappings.get(term);
+				List<DataObject> mappedConceptsDOList = new ArrayList<DataObject>();
+				
+				for (Concept concept : mappedConcepts) {
+					
+					DataObject mappedConceptDataObject = simplifyConcept(concept, locale);
+					mappedConceptsDOList.add(mappedConceptDataObject);
+				}
+				DataObject refTermDataObject = simplifyReferenceTerm(term);
+				theTerm.add(gson.toJson(simplifyMapping(mappedConceptsDOList, refTermDataObject)));
+			}
 			
 			List<String> parents = new ArrayList<String>();
 			for (ConceptReferenceTerm term : parentTerms) {
@@ -152,9 +172,8 @@ public class ChooseConceptByHierarchyFragmentController {
 				DataObject refTermDataObject = simplifyReferenceTerm(term);
 				children.add(gson.toJson(simplifyMapping(mappedConceptsDOList, refTermDataObject)));
 			}
-			String currentTerm = gson.toJson(simplifyReferenceTerm(currentRefTerm));
 			
-			DataObject ancestorsDataObject = simplifyAncestors(parents, children, currentTerm);
+			DataObject ancestorsDataObject = simplifyAncestors(parents, children, theTerm);
 			
 			data.add(gson.toJson(ancestorsDataObject));
 			
@@ -180,7 +199,7 @@ public class ChooseConceptByHierarchyFragmentController {
 		return dataObject;
 	}
 	
-	private DataObject simplifyAncestors(List<String> parents, List<String> children, String term) throws Exception {
+	private DataObject simplifyAncestors(List<String> parents, List<String> children, List<String> term) throws Exception {
 		List<Object> propertyNamesAndValues = new ArrayList<Object>();
 		
 		propertyNamesAndValues.add("parents");

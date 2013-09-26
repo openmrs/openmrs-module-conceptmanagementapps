@@ -100,32 +100,32 @@ searchConceptApp.directive('ngHierarchy',function(messageService,hierarchyConcep
 			selectedRefTerm : '=selectedRefTerm'
 		},
 		template : '<div class="left" ng-show="currentTerm">'
-			+ '     <ul id="nestedlist">'
+			+ '     <ul id="nestedlist">test'
 
 			+ '			<li>Parent(s):<ul>'
 			+ '         	<li ng-repeat="term in _parentTermsAndConcepts">'
 			+ '         		<div class="chooseByHierarchy">'
-			+ '						&nbsp;Name Of Reference Term:&nbsp;<a href="javascript:void(0);" ng-click="selectRefTerm(term);">view&nbsp;&nbsp;</a>'
-			+ '						{{term.termName}}&nbsp;&nbsp;'
+			+ '						<a href="javascript:void(0);" ng-click="selectRefTerm(term);">&nbsp;&nbsp;{{term.termName}}&nbsp;&nbsp;</a>'
+			+ '						'
 			+ '						<a href="javascript:void(0);" style="float:right;" ng-click="selectRefTerm(term);">'
 			+ '							&nbsp;&nbsp;{{term.termCode}}</a>'
-			+ '						</br><label ng-show="term.mappedConcepts">Choose Concept:&nbsp;</label>'
+			+ '						</br><label ng-show="term.mappedConcepts">Concepts For This Term:&nbsp;</label>'
 			+ '						<strong><button class="chooseByHierarchyConcept" ng-repeat="parentConcept in term.mappedConcepts" ng-click="selectRefTerm(term);">'
 			+ '							{{parentConcept.conceptName}}</button></strong></div></li ng-if="$index!=_parentTermsAndConcepts.length"></ul></br>'
 
-			+ '     						<ul><li>Current Term:<ul><li><div class="currentTerm">'
-			+ '									<label  ng-show="currentTerm.termName">&nbsp;Reference Term:&nbsp;</label>'
-			+ '									<span>{{currentTerm.termName}}&nbsp;&nbsp;{{currentTerm.termCode}}</span>'
-			+ '										<label ng-show="currentTerm.conceptName" >Concept:&nbsp;</label><span>{{currentTerm.conceptName}}</span>'
-			+ '								</div></li></ul>'
+			+ '     						<ul><li>Current Term:<ul><li ng-repeat="mappedCurrentTerm in _currentTermAndConcepts"><div class="currentTerm">'
+			+ '									<label  ng-show="mappedCurrentTerm.termName"></label>'
+			+ '									<span>&nbsp;&nbsp;{{mappedCurrentTerm.termName}}&nbsp;&nbsp;{{mappedCurrentTerm.termCode}}</span>'
+			+ '										<div ng-repeat="currentTermConcept in mappedCurrentTerm.mappedConcepts"><label ng-show="currentTermConcept.conceptName" >&nbsp;&nbsp;Concepts For This Term:&nbsp;</label><span>{{currentTermConcept.conceptName}}</span>'
+			+ '								</div></li></ul></br>'
 
 			+ '									<ul><li>Child(ren):<ul> '
 			+ '         							<li ng-repeat="childTerm in _childTermsAndConcepts">'
-			+ '											<div class="chooseByHierarchy">&nbsp;Name Of Reference Term:'
-			+ '												<a href="javascript:void(0);" ng-click="selectRefTerm(childTerm);">view</a>&nbsp;&nbsp;'
-			+ '          									{{childTerm.termName}}&nbsp;&nbsp;<a href="javascript:void(0);" style="float:right;" ng-click="selectRefTerm(childTerm);">'
+			+ '											<div class="chooseByHierarchy">'
+			+ '												<a href="javascript:void(0);" ng-click="selectRefTerm(childTerm);">&nbsp;&nbsp;{{childTerm.termName}}&nbsp;&nbsp;</a>&nbsp;&nbsp;'
+			+ '          									<a href="javascript:void(0);" style="float:right;" ng-click="selectRefTerm(childTerm);">'
 			+ '												&nbsp;&nbsp;{{childTerm.termCode}}</a>'
-			+ '												</br><label ng-show="childTerm.mappedConcepts">Choose Concept:&nbsp;</label>'
+			+ '												</br><label ng-show="childTerm.mappedConcepts">Concepts For This Term:&nbsp;</label>'
 			+ '          									<strong> <button class="chooseByHierarchyConcept" ng-click="selectConcept(childTerm, childConcept);" ng-repeat="childConcept in childTerm.mappedConcepts">'
 			+ '												{{childConcept.conceptName}}</button></strong>'
 			+ '											</div></li></ul></li></ul>'
@@ -183,15 +183,17 @@ searchConceptApp.directive('ngHierarchy',function(messageService,hierarchyConcep
 
 								var childArray = [];
 								var parentArray = [];
+								var currentTermArray = [];
+								var mappedCurrentTermArray = [];
 								var mappedParentTermsArray = [];
-								var mappedParentConceptsArray = [];
-								var mappedChildConceptsArray = [];
 								var mappedChildTermsArray = [];	
 								var childTermsAndConceptsArray = [];
 								var parentTermsAndConceptsArray = [];
+								var currentTermAndConceptsArray = [];
 
 								var parents=angular.fromJson(angular.fromJson(data[0]).parents);
 								var children=angular.fromJson(angular.fromJson(data[0]).children);
+								var term=angular.fromJson(angular.fromJson(data[0]).term);
 
 								for ( var i = 0; i < parents.length; i++) {
 
@@ -202,23 +204,35 @@ searchConceptApp.directive('ngHierarchy',function(messageService,hierarchyConcep
 
 									childArray.push(angular.fromJson(angular.fromJson(data[0])).children[i]);
 								}
+								
+								for ( var i = 0; i < term.length; i++) {
+
+									currentTermArray.push(angular.fromJson(angular.fromJson(data[0])).term[i]);
+								}
 
 								for ( var i = 0; i < angular.fromJson(parentArray).length; i++) {
+									
 									mappedParentTermsArray=angular.fromJson(parentArray[i]).mappedRefTerm;
 
 									var parentConcept = angular.fromJson(parentArray[i]).mappedConcept;
 
 									var mappedConceptsArray = [];
+									
 									for(var j = 0; j < parentConcept.length;j++){
+										
 										var theConceptId = ''
 											var  theConceptName='';
 
 										if(parentConcept[j] !== undefined && parentConcept[j].conceptId !== undefined){
+											
 											theConceptId = parentConcept[j].conceptId;
 										}
+										
 										if(parentConcept[j] !== undefined && parentConcept[j].conceptName !== undefined){
+											
 											theConceptName = parentConcept[j].conceptName;
 										}
+										
 										mappedConceptsArray[j]={conceptId:theConceptId,conceptName:theConceptName};
 									}
 									parentTermsAndConceptsArray[i]={termCode:mappedParentTermsArray.termCode, termId:mappedParentTermsArray.termId,termName:mappedParentTermsArray.termName,mappedConcepts:mappedConceptsArray};
@@ -227,15 +241,19 @@ searchConceptApp.directive('ngHierarchy',function(messageService,hierarchyConcep
 
 
 								for ( var i = 0; i < angular.fromJson(childArray).length; i++) {
+									
 									mappedChildTermsArray=angular.fromJson(childArray[i]).mappedRefTerm;
 
 									var childConcept = angular.fromJson(childArray[i]).mappedConcept;
 
 									console.log('childConceptLength  '+childConcept.length);
+									
 									var mappedConceptsArray = [];
+									
 									for(var j = 0; j < childConcept.length;j++){
+										
 										var theConceptId = ''
-											var  theConceptName='';
+										var  theConceptName='';
 
 										if(childConcept[j] !== undefined && childConcept[j].conceptId !== undefined){
 											theConceptId = childConcept[j].conceptId;
@@ -251,13 +269,42 @@ searchConceptApp.directive('ngHierarchy',function(messageService,hierarchyConcep
 									childTermsAndConceptsArray[i]={termCode:mappedChildTermsArray.termCode, termId:mappedChildTermsArray.termId,termName:mappedChildTermsArray.termName,mappedConcepts:mappedConceptsArray};
 
 								}
+								
+								for ( var i = 0; i < angular.fromJson(currentTermArray).length; i++) {
+									
+									mappedCurrentTermArray=angular.fromJson(currentTermArray[i]).mappedRefTerm;
+
+									var currentTermConcept = angular.fromJson(currentTermArray[i]).mappedConcept;
+
+									console.log('currentTermConcept  '+currentTermConcept.length);
+									
+									var mappedCurrentTermConceptsArray = [];
+									
+									for(var j = 0; j < currentTermConcept.length;j++){
+										
+										var theConceptId = ''
+										var  theConceptName='';
+
+										if(currentTermConcept[j] !== undefined && currentTermConcept[j].conceptId !== undefined){
+											theConceptId = currentTermConcept[j].conceptId;
+										}
+										if(currentTermConcept[j] !== undefined && currentTermConcept[j].conceptName !== undefined){
+											theConceptName = currentTermConcept[j].conceptName;
+										}
+
+										mappedCurrentTermConceptsArray[j]={conceptId:theConceptId,conceptName:theConceptName};
+										console.log(mappedCurrentTermConceptsArray[j]);
+									}
+									currentTermAndConceptsArray[i]={termCode:mappedCurrentTermArray.termCode, termId:mappedCurrentTermArray.termId,termName:mappedCurrentTermArray.termName,mappedConcepts:mappedCurrentTermConceptsArray};
+									
+								}
 
 								$scope.$apply(function () {
 
 									$scope._childTermsAndConcepts = childTermsAndConceptsArray;
 									$scope._parentTermsAndConcepts = parentTermsAndConceptsArray;
-									$scope.currentTerm = angular.fromJson(angular.fromJson(data[0]).term);
-
+									$scope._currentTermAndConcepts = currentTermAndConceptsArray;
+									$scope.currentTerm = currentTermAndConceptsArray[0];
 								});
 							}
 						});
