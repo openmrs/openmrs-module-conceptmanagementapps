@@ -115,8 +115,8 @@ searchConceptApp.directive('ngHierarchy',function(messageService,hierarchyConcep
 
 			+ '     						<ul><li>Current Term:<ul><li ng-repeat="mappedCurrentTerm in _currentTermAndConcepts"><div class="currentTerm">'
 			+ '									<label  ng-show="mappedCurrentTerm.termName"></label>'
-			+ '									<span>&nbsp;&nbsp;{{mappedCurrentTerm.termName}}&nbsp;&nbsp;{{mappedCurrentTerm.termCode}}</span>'
-			+ '										<div ng-repeat="currentTermConcept in mappedCurrentTerm.mappedConcepts"><label ng-show="currentTermConcept.conceptName" >&nbsp;&nbsp;Concepts For This Term:&nbsp;</label><span>{{currentTermConcept.conceptName}}</span>'
+			+ '									<a href="javascript:void(0);" >&nbsp;&nbsp;{{mappedCurrentTerm.termName}}&nbsp;&nbsp;</a><a href="javascript:void(0);" style="float:right;" >{{mappedCurrentTerm.termCode}}</a>'
+			+ '										<div ng-repeat="currentTermConcept in mappedCurrentTerm.mappedConcepts"><label ng-show="currentTermConcept.conceptName" >&nbsp;&nbsp;Concepts For This Term:&nbsp;</label><strong> <button class="chooseByHierarchyConcept"> {{currentTermConcept.conceptName}}</button></strong>'
 			+ '								</div></li></ul></br>'
 
 			+ '									<ul><li>Child(ren):<ul> '
