@@ -100,7 +100,7 @@ searchConceptApp.directive('ngHierarchy',function(messageService,hierarchyConcep
 			selectedRefTerm : '=selectedRefTerm'
 		},
 		template : '<div class="left" ng-show="currentTerm">'
-			+ '     <ul id="nestedlist">test'
+			+ '     <ul id="nestedlist">'
 
 			+ '			<li>Parent(s):<ul>'
 			+ '         	<li ng-repeat="term in _parentTermsAndConcepts">'
@@ -116,8 +116,8 @@ searchConceptApp.directive('ngHierarchy',function(messageService,hierarchyConcep
 			+ '     						<ul><li>Current Term:<ul><li ng-repeat="mappedCurrentTerm in _currentTermAndConcepts"><div class="currentTerm">'
 			+ '									<label  ng-show="mappedCurrentTerm.termName"></label>'
 			+ '									<a href="javascript:void(0);" >&nbsp;&nbsp;{{mappedCurrentTerm.termName}}&nbsp;&nbsp;</a><a href="javascript:void(0);" style="float:right;" >{{mappedCurrentTerm.termCode}}</a>'
-			+ '										<div ng-repeat="currentTermConcept in mappedCurrentTerm.mappedConcepts"><label ng-show="currentTermConcept.conceptName" >&nbsp;&nbsp;Concepts For This Term:&nbsp;</label><strong> <button class="chooseByHierarchyConcept"> {{currentTermConcept.conceptName}}</button></strong>'
-			+ '								</div></li></ul></br>'
+			+ '									</br><label ng-show="mappedCurrentTerm.mappedConcepts" >&nbsp;Concepts For This Term:&nbsp;</label><strong> <button class="chooseByHierarchyConcept" ng-repeat="currentTermConcept in mappedCurrentTerm.mappedConcepts"> {{currentTermConcept.conceptName}}</button></strong>'
+			+ '								</li></ul></br>'
 
 			+ '									<ul><li>Child(ren):<ul> '
 			+ '         							<li ng-repeat="childTerm in _childTermsAndConcepts">'
